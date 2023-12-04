@@ -23,6 +23,8 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+
         # Set health checks to wait until postgres has started
         ports:
           # Maps tcp port 5432 on service container to the host
@@ -63,6 +65,7 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
           DATABASE_URL: postgres://postgres:@localhost:5432/${{ secrets.POSTGRES_DB }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: |
           cp config/database.yml.ci config/database.yml
           bundle exec rails db:create
@@ -77,4 +80,5 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           DATABASE_URL: postgres://postgres:@localhost:5432/${{ secrets.POSTGRES_DB }}
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: bundle exec rspec
