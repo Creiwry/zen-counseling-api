@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.3"
+ruby "3.2.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.2"
@@ -41,9 +41,13 @@ gem 'devise'
 gem 'devise-jwt'
 gem 'jsonapi-serializer'
 
+gem "dotenv-rails", "~> 2.8"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "rspec-rails"
+  gem "shoulda-matchers", "~> 5.3"
+  gem "factory_bot_rails"
   gem "faker", "~> 3.2"
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end
@@ -53,3 +57,15 @@ group :development do
   # gem "spring"
 end
 
+
+gem "minitest", "~> 5.20"
+
+gem "pry", "~> 0.14.2"
+
+gem "aws-sdk-s3", "~> 1.141"
+
+gem "dockerfile-rails", ">= 1.5", :group => :development
+
+gem "sentry-ruby", "~> 5.14"
+
+gem "sentry-rails", "~> 5.14"
