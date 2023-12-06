@@ -5,7 +5,7 @@ class CreateInvoices < ActiveRecord::Migration[7.1]
       t.decimal :total
       t.string :status
       t.references :user, null: false, foreign_key: true
-      t.references :admin, null: false, foreign_key: true
+      t.references :admin, null: false, foreign_key: { to_table: :users }
 
       t.timestamps
     end

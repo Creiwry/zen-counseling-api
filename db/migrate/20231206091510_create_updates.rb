@@ -3,7 +3,7 @@ class CreateUpdates < ActiveRecord::Migration[7.1]
     create_table :updates do |t|
       t.string :title
       t.text :content
-      t.references :user, null: false, foreign_key: true
+      t.references :admin, null: false, foreign_key: { to_table: :users }
 
       t.timestamps
     end
