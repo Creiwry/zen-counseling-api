@@ -4,7 +4,7 @@ class CreateInvoices < ActiveRecord::Migration[7.1]
       t.integer :appointment_number
       t.decimal :total
       t.string :status
-      t.references :user, null: false, foreign_key: true
+      t.references :client, null: false, foreign_key: { to_table: :users }
       t.references :admin, null: false, foreign_key: { to_table: :users }
 
       t.timestamps

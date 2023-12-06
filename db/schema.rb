@@ -44,7 +44,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
 
   create_table "appointments", force: :cascade do |t|
     t.bigint "invoice_id", null: false
-    t.bigint "user_id", null: false
+    t.bigint "client_id", null: false
     t.bigint "admin_id", null: false
     t.datetime "date"
     t.string "link"
@@ -52,8 +52,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["admin_id"], name: "index_appointments_on_admin_id"
+    t.index ["client_id"], name: "index_appointments_on_client_id"
     t.index ["invoice_id"], name: "index_appointments_on_invoice_id"
-    t.index ["user_id"], name: "index_appointments_on_user_id"
   end
 
   create_table "cart_items", force: :cascade do |t|
@@ -77,13 +77,13 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
     t.integer "appointment_number"
     t.decimal "total"
     t.string "status"
-    t.bigint "user_id", null: false
+    t.bigint "client_id", null: false
     t.bigint "admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "stripe_customer_id"
     t.index ["admin_id"], name: "index_invoices_on_admin_id"
-    t.index ["user_id"], name: "index_invoices_on_user_id"
+    t.index ["client_id"], name: "index_invoices_on_client_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -144,13 +144,13 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "appointments", "invoices"
-  add_foreign_key "appointments", "users"
   add_foreign_key "appointments", "users", column: "admin_id"
+  add_foreign_key "appointments", "users", column: "client_id"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "items"
   add_foreign_key "carts", "users"
-  add_foreign_key "invoices", "users"
   add_foreign_key "invoices", "users", column: "admin_id"
+  add_foreign_key "invoices", "users", column: "client_id"
   add_foreign_key "order_items", "items"
   add_foreign_key "order_items", "orders"
   add_foreign_key "orders", "users"

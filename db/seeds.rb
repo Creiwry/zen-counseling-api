@@ -8,14 +8,16 @@
 
 OrderItem.destroy_all
 CartItem.destroy_all
-Invoice.destroy_all
 Appointment.destroy_all
+Invoice.destroy_all
 Update.destroy_all
 Order.destroy_all
 Item.destroy_all
 Cart.destroy_all
 User.destroy_all
 
+puts 'User'
+puts 'Cart'
 10.times do
   user = User.create!(
     admin: false,
@@ -29,6 +31,8 @@ end
 carts = Cart.all
 users = User.all
 
+puts 'Item'
+puts 'Cart Item'
 30.times do
   item = Item.create!(
     title: Faker::Lorem.words(number: 2).join(' '),
@@ -43,6 +47,8 @@ users = User.all
   )
 end
 
+puts 'Order'
+puts 'Order Item'
 carts.each do |cart|
   order = Order.new(
     user: cart.user,
@@ -64,6 +70,7 @@ admin = users.sample
 admin.update!(admin: true)
 users_not_admin = users.reject { |user| user == admin }
 
+puts 'Update'
 5.times do
   Update.create!(
     admin:,
@@ -72,18 +79,20 @@ users_not_admin = users.reject { |user| user == admin }
   )
 end
 
+puts 'Invoice'
+puts 'Appointment'
 20.times do
   invoice = Invoice.create!(
     appointment_number: Faker::Number.within(range: 2..5),
     total: Faker::Number.within(range: 200..500),
-    user: users_not_admin.sample,
+    client: users_not_admin.sample,
     admin:,
     status: 'unpaid'
   )
 
   invoice.appointment_number.times do
     Appointment.create!(
-      user: invoice.user,
+      client: invoice.client,
       admin: invoice.admin,
       invoice:,
       date: Faker::Date.forward,
