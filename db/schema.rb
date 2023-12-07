@@ -75,7 +75,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
 
   create_table "invoices", force: :cascade do |t|
     t.integer "appointment_number"
-    t.decimal "total"
+    t.decimal "total", precision: 10, scale: 2
     t.string "status"
     t.bigint "client_id", null: false
     t.bigint "admin_id", null: false
@@ -89,7 +89,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
   create_table "items", force: :cascade do |t|
     t.string "title"
     t.text "description"
-    t.decimal "price"
+    t.decimal "price", precision: 10, scale: 2
     t.integer "stock"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -98,7 +98,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
   create_table "order_items", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.bigint "item_id", null: false
-    t.decimal "total"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_order_items_on_item_id"
@@ -108,7 +107,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
   create_table "orders", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "stripe_customer_id"
-    t.decimal "total"
+    t.decimal "total", precision: 10, scale: 2
     t.string "address"
     t.string "status"
     t.datetime "created_at", null: false

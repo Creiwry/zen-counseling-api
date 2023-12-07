@@ -3,7 +3,7 @@ class CreateItems < ActiveRecord::Migration[7.1]
     create_table :items do |t|
       t.string :title
       t.text :description
-      t.decimal :price
+      t.decimal :price, precision: 10, scale: 2
       t.integer :stock
 
       t.timestamps

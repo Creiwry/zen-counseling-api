@@ -4,4 +4,12 @@ class Invoice < ApplicationRecord
   belongs_to :client, class_name: 'User', foreign_key: 'client_id'
 
   has_many :appointments
+
+  validates :appointment_number, presence: true, numericality: {
+    only_integer: true
+  }
+  validates :total, presence: true, numericality: {
+    greater_than: 0
+  }
+  validates :status, presence: true, inclusion: %w[unpaid paid cancelled]
 end

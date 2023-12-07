@@ -1,4 +1,7 @@
+require_dependency 'validators/password_regex_validator'
+
 class User < ApplicationRecord
+  after_create :create_cart
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   include Devise::JWT::RevocationStrategies::JTIMatcher
@@ -11,11 +14,24 @@ class User < ApplicationRecord
   has_many :client_invoices, class_name: 'Invoice', foreign_key: 'client_id'
   has_many :client_appointments, class_name: 'Appointment', foreign_key: 'client_id'
 
-  has_one :cart
+  has_one :cart, dependent: :destroy
   has_many :cart_items, through: :cart
 
   has_many :updates, foreign_key: 'admin_id'
 
   has_many :orders
   has_many :order_items, through: :orders
+
+  validates :admin, inclusion: [true, false]
+  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :username, presence: true, uniqueness: true, length: {
+    maximum: 10,
+    too_long: "%{count} characters is the maximum allowed"
+  }
+
+  validates_with Validators::PasswordRegexValidator
+
+  def create_cart
+    Cart.create!(user: self)
+  end
 end

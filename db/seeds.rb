@@ -19,13 +19,13 @@ User.destroy_all
 puts 'User'
 puts 'Cart'
 10.times do
-  user = User.create!(
+  User.create!(
     admin: false,
     email: Faker::Internet.email,
     password: 'Password!23',
     username: Faker::Internet.username
   )
-  Cart.create!(user:)
+  # Cart.create!(user:)
 end
 
 carts = Cart.all
@@ -37,7 +37,7 @@ puts 'Cart Item'
   item = Item.create!(
     title: Faker::Lorem.words(number: 2).join(' '),
     description: Faker::Lorem.paragraph,
-    price: Faker::Number.within(range: 10.0..300.0),
+    price: Faker::Number.decimal(l_digits: 2),
     stock: Faker::Number.within(range: 10..100)
   )
   CartItem.create!(
