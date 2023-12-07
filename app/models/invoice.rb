@@ -6,7 +6,8 @@ class Invoice < ApplicationRecord
   has_many :appointments
 
   validates :appointment_number, presence: true, numericality: {
-    only_integer: true
+    only_integer: true,
+    greater_than: 0
   }
   validates :total, presence: true, numericality: {
     greater_than: 0

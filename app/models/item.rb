@@ -8,12 +8,10 @@ class Item < ApplicationRecord
   has_many :orders, through: :order_items
 
   validates :title, presence: true, length: {
-    maximum: 25,
-    too_long: "%{count} characters is the maximum allowed"
+    maximum: 25
   }
   validates :description, presence: true, length: {
-    maximum: 1000,
-    too_long: "%{count} characters is the maximum allowed"
+    maximum: 1000
   }
 
   validates :price, presence: true, numericality: {
@@ -24,5 +22,4 @@ class Item < ApplicationRecord
     only_integer: true,
     greater_than_or_equal_to: 0
   }
-
 end
