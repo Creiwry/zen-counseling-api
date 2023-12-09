@@ -1,23 +1,4 @@
 Rails.application.routes.draw do
-  resources :updates
-
-  ## Store API
-  resources :users, only: [:show] do
-    resources :appointments
-    resources :invoices
-    resource :carts, only: [:update, :show] do
-      resources :cart_items, only: [:create, :update, :destroy]
-    end
-  end
-
-  resources :items do
-    resources :cart_items, only: [:create]
-  end
-
-  resources :orders
-  resources :items
-
-  ## Counseling API
   get '/current_user', to: 'current_user#index'
   devise_for :users, path: '/users', path_names: {
       sign_in: '/sign_in',
@@ -26,6 +7,28 @@ Rails.application.routes.draw do
       sessions: 'users/sessions',
       registrations: 'users/registrations'
     }
+
+  resources :updates
+
+  ## Store API
+  patch '/cart/cart_items/:id', to: 'cart_items#update'
+  delete '/cart/cart_items/:id', to: 'cart_items#destroy'
+  get '/cart', to: 'carts#show'
+  resources :users, only: [:show] do
+    resources :orders
+    resources :invoices do
+      resources :appointments
+    end
+  end
+
+  resources :items do
+    resources :cart_items, only: [:create]
+  end
+  resources :orders, only: [:index, :show]
+
+  resources :items
+
+  ## Counseling API
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

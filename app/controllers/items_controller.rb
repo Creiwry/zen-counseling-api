@@ -1,5 +1,7 @@
 class ItemsController < ApplicationController
   before_action :set_item, only: %i[ show update destroy ]
+  before_action :authenticate_user!
+  before_action :check_if_admin, only: %i[create update destroy]
 
   # GET /items
   def index
@@ -39,13 +41,20 @@ class ItemsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_item
-      @item = Item.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_item
+    @item = Item.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def item_params
-      params.require(:item).permit(:title, :description, :price, :stock, images:[])
-    end
+  def check_if_admin
+    return if current_user.admin
+
+    render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
+  end
+
+
+  # Only allow a list of trusted parameters through.
+  def item_params
+    params.require(:item).permit(:title, :description, :price, :stock, images:[])
+  end
 end

@@ -25,8 +25,7 @@ class User < ApplicationRecord
   validates :admin, inclusion: [true, false]
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :username, presence: true, uniqueness: true, length: {
-    maximum: 10,
-    too_long: "%{count} characters is the maximum allowed"
+    maximum: 10
   }
 
   validates_with Validators::PasswordRegexValidator

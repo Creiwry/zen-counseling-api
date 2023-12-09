@@ -4,6 +4,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
   include RackSessionFix
   respond_to :json
 
+  def destroy
+    resource.destroy
+    set_flash_message! :notice, :destroyed
+    yield resource if block_given?
+    respond_with_navigational(resource){ redirect_to after_sign_out_path_for(resource_name), status: Devise.responder.redirect_status }
+  end
+
   private
 
   def respond_with(resource, _opts = {})

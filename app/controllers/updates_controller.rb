@@ -1,5 +1,7 @@
 class UpdatesController < ApplicationController
   before_action :set_update, only: %i[ show update destroy ]
+  before_action :authenticate_user!, except: %i[show index]
+  before_action :check_if_admin, only: %i[create update destroy]
 
   # GET /updates
   def index
@@ -16,6 +18,7 @@ class UpdatesController < ApplicationController
   # POST /updates
   def create
     @update = Update.new(update_params)
+    @update.admin = current_user
 
     if @update.save
       render json: @update, status: :created, location: @update
@@ -39,13 +42,19 @@ class UpdatesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_update
-      @update = Update.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def update_params
-      params.require(:update).permit(:title, :content, :user_id, :image)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_update
+    @update = Update.find(params[:id])
+  end
+
+  def check_if_admin
+    return if current_user.admin
+
+    render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
+  end
+  # Only allow a list of trusted parameters through.
+  def update_params
+    params.require(:update).permit(:title, :content, :image, :admin_id)
+  end
 end
