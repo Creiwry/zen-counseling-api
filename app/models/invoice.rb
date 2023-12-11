@@ -21,8 +21,8 @@ class Invoice < ApplicationRecord
         invoice: self,
         admin: self.admin,
         client: self.client,
-        date: nil,
-        link: nil,
+        link: "this is the link",
+        date: DateTime.now + 1.year,
         status: 'unpaid'
       )
     end
