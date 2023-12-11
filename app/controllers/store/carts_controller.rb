@@ -1,4 +1,4 @@
-class CartsController < ApplicationController
+class Store::CartsController < ApplicationController
   before_action :authenticate_user!, only: %i[ show update ]
   # GET /carts
   # def index

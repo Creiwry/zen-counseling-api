@@ -8,26 +8,33 @@ Rails.application.routes.draw do
       sessions: 'users/sessions',
       registrations: 'users/registrations'
     }
-
   resources :updates
 
-  ## Store API
-  patch '/cart/cart_items/:id', to: 'cart_items#update'
-  delete '/cart/cart_items/:id', to: 'cart_items#destroy'
-  get '/cart', to: 'carts#show'
+  ## Counselling API
   resources :users, only: [:show] do
-    resources :orders
-    resources :invoices do
-      resources :appointments
+    scope module: 'counselling' do
+      resources :invoices do
+        resources :appointments
+      end
     end
   end
 
-  resources :items do
-    resources :cart_items, only: [:create]
+  ## Store API
+  resources :users, only: [:show] do
+    scope module: 'store' do
+      resources :orders
+    end
   end
-  resources :orders, only: [:index, :show]
 
-  resources :items
+  patch '/cart/cart_items/:id', to: 'store/cart_items#update'
+  delete '/cart/cart_items/:id', to: 'store/cart_items#destroy'
+  get '/cart', to: 'store/carts#show'
+  scope module: 'store' do
+    resources :items do
+      resources :cart_items, only: [:create]
+    end
+    resources :orders, only: [:index, :show]
+  end
 
   ## Counseling API
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

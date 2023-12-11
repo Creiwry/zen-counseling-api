@@ -1,4 +1,4 @@
-class ItemsController < ApplicationController
+class Store::ItemsController < ApplicationController
   before_action :set_item, only: %i[ show update destroy ]
   before_action :authenticate_user!, except: %i[index show]
   before_action :check_if_admin, only: %i[create update destroy]

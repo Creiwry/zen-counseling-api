@@ -1,4 +1,4 @@
-class InvoicesController < ApplicationController
+class Counselling::InvoicesController < ApplicationController
   before_action :set_invoice, only: %i[ show update destroy ]
   before_action :authenticate_user!
   before_action :check_if_admin, only: %i[create update destroy]
