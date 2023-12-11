@@ -43,6 +43,7 @@ gem 'jsonapi-serializer'
 
 gem "dotenv-rails", "~> 2.8"
 
+gem 'stripe', '~> 9.0'
 gem 'validates_timeliness', '~> 7.0.0.beta1'
 
 group :development, :test do
