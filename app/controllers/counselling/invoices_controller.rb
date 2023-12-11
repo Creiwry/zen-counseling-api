@@ -5,11 +5,14 @@ class Counselling::InvoicesController < ApplicationController
 
   # GET /invoices
   def index
-    unless current_user.admin || current_user.id == params[:user_id]
+    unless current_user.admin || current_user.id == params[:user_id].to_i
       render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
       return
     end
-    @invoices = Invoice.find_by(client_id: params[:user_id])
+    @invoices = Invoice.where(client_id: params[:user_id].to_i)
+
+    render json: @invoices
+  end
 
     render json: @invoices
   end
