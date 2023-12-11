@@ -4,6 +4,6 @@ FactoryBot.define do
     stripe_customer_id { "MyString" }
     total { "9.99" }
     address { "MyString" }
-    status { "MyString" }
+    status { "unpaid" }
   end
 end
