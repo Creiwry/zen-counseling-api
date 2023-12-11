@@ -40,6 +40,8 @@ gem "rack-cors"
 gem 'devise'
 gem 'devise-jwt'
 gem 'jsonapi-serializer'
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
 
 gem "dotenv-rails", "~> 2.8"
 

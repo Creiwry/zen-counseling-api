@@ -1,4 +1,5 @@
 class InvoicesController < ApplicationController
+  include InvoiceCreator
   before_action :set_invoice, only: %i[ show update destroy ]
   before_action :authenticate_user!
   before_action :check_if_admin, only: %i[create update destroy]
@@ -20,7 +21,7 @@ class InvoicesController < ApplicationController
       render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
       return
     end
-    render json: @invoice
+    render json: { invoice: @invoice, document: url_for(@invoice.document) }
   end
 
   # POST /invoices
@@ -30,6 +31,7 @@ class InvoicesController < ApplicationController
     @invoice.client = user
     @invoice.admin = current_user
     @invoice.create_appointments
+    create_invoice_pdf(@invoice)
 
     if @invoice.save
       render json: @invoice, status: :created
