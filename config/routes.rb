@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get '/current_user', to: 'current_user#index'
+  get '/is_admin', to: 'current_user#admin?'
   devise_for :users, path: '/users', path_names: {
       sign_in: '/sign_in',
     },
