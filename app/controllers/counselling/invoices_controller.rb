@@ -14,8 +14,6 @@ class Counselling::InvoicesController < ApplicationController
     render json: @invoices
   end
 
-    render json: @invoices
-  end
 
   # GET /invoices/1
   def show
