@@ -23,7 +23,9 @@ puts 'Cart'
     admin: false,
     email: Faker::Internet.email,
     password: 'Password!23',
-    username: Faker::Internet.username
+    first_name: Faker::Name.first_name,
+    last_name: Faker::Name.last_name,
+    username: Faker::Internet.username.slice(0, 10)
   )
   # Cart.create!(user:)
 end
