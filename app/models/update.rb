@@ -1,0 +1,14 @@
+class Update < ApplicationRecord
+  has_one_attached :image
+  belongs_to :admin, class_name: 'User', foreign_key: 'admin_id'
+
+  validates :title, presence: true, length: {
+    maximum: 25,
+    too_long: "%{count} characters is the maximum allowed"
+  }
+
+  validates :content, presence: true, length: {
+    maximum: 1000,
+    too_long: "%{count} characters is the maximum allowed"
+  }
+end
