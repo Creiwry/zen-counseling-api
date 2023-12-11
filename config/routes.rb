@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   get '/is_admin', to: 'current_user#is_admin'
   devise_for :users, path: '/users', path_names: {
       sign_in: '/sign_in',
+      # log_out: '/log_out'
     },
   controllers: {
       sessions: 'users/sessions',
@@ -19,6 +20,8 @@ Rails.application.routes.draw do
     end
   end
 
+  post '/invoices/:invoice_id/create_checkout_session', to: 'counselling/checkout#create'
+  get '/invoices/:invoice_id/session-status', to: 'counselling/checkout#session_status'
   ## Store API
   resources :users, only: [:show] do
     scope module: 'store' do
@@ -29,6 +32,8 @@ Rails.application.routes.draw do
   patch '/cart/cart_items/:id', to: 'store/cart_items#update'
   delete '/cart/cart_items/:id', to: 'store/cart_items#destroy'
   get '/cart', to: 'store/carts#show'
+  post '/orders/:order_id/create_checkout_session', to: 'store/checkout#create'
+  get '/orders/:order_id/session-status', to: 'store/checkout#session_status'
   scope module: 'store' do
     resources :items do
       resources :cart_items, only: [:create]
