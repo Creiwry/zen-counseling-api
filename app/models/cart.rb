@@ -36,8 +36,12 @@ class Cart < ApplicationRecord
       end
     end
 
+    return order.check_stock unless order.check_stock[:success] == true
+
     cart_items.destroy_all
 
     order.save!
+
+    { success: true }
   end
 end

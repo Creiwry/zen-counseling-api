@@ -25,15 +25,11 @@ class Store::OrdersController < ApplicationController
 
   # POST /orders
   def create
-    # @order = Order.new(order_params)
-
-    current_user.cart.create_order(params[:order][:address])
-    render json: { response: "Order created" }, status: :created
-    # if @order.save
-    #   render json: @order, status: :created, location: @order
-    # else
-    #   render json: @order.errors, status: :unprocessable_entity
-    # end
+    if current_user.cart.create_order(params[:order][:address])[:success] == true
+      render json: { response: 'Order created' }, status: :created
+    else
+      render json: { response: current_user.cart.create_order(params[:order][:address]).status }, status: 424
+    end
   end
 
   # PATCH/PUT /orders/1

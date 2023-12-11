@@ -29,10 +29,10 @@ class Invoice < ApplicationRecord
   end
 
   def update_appointments
-    self.appointments.each do |appointment|
-      if self.status == 'paid'
-        appointment.update(status: 'available')
-      end
+    appointments_to_update = Appointment.where(invoice: self)
+
+    appointments_to_update.each do |appointment|
+      appointment.update(status: 'available') if self.status == 'paid'
     end
   end
 end

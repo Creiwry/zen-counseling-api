@@ -4,67 +4,43 @@ class Store::CheckoutController < ApplicationController
   # before_action :authenticate_user!
 
   def create
-    session = Stripe::Checkout::Session.create({
-      ui_mode: 'embedded',
-      line_items: [{
-        price_data: {
-          currency: 'eur',
-          unit_amount: (5 * 100).to_i,
-          product_data: {
-            name: 'test'
-          }
-        },
-        quantity: 1
-      }],
-      mode: 'payment',
-      return_url: 'http://localhost:5173/return?session_id={CHECKOUT_SESSION_ID}'
-    })
+    order = Order.find(params[:order_id].to_i)
+
+    line_items_stripe = order.stripe_line_items
+    session = Stripe::Checkout::Session.create(
+      {
+        ui_mode: 'embedded',
+        line_items: line_items_stripe,
+        mode: 'payment',
+        return_url: 'http://localhost:5173/return?session_id={CHECKOUT_SESSION_ID}'
+      }
+    )
 
     render json: { clientSecret: session.client_secret }
   end
 
   def session_status
+    order = Order.find(params[:order_id].to_i)
     session = Stripe::Checkout::Session.retrieve(params[:session_id])
 
+    @session = Stripe::Checkout::Session.retrieve(params[:session_id])
+    @payment_intent = Stripe::PaymentIntent.retrieve(@session.payment_intent)
+
+    order.update(status: 'paid') if @payment_intent.status == 'succeeded'
+
     render json: { status: session.status, customer_email: session.customer_details.email }
+  rescue Stripe::StripeError => e
+    Rails.logger.error("Stripe error during charge: #{e.message}")
+    puts json: { message: e.message, error_type: "Stripe" }
+  rescue StandardError => e
+    Rails.logger.error("Failed to create order for user: #{current_user.id}")
+    puts json: { message: e.message, error_type: "Standard" }
+    refund_payment(@payment_intent.id)
   end
 
   def cancel; end
 
   private
-
-  def create_order(stripe_customer_id)
-    payment_intent_id = @payment_intent.id
-    order = Order.new(
-      user_id: current_user.id,
-      stripe_customer_id:,
-      total_price: current_user.cart.get_total
-    )
-
-    begin
-      ActiveRecord::Base.transaction do
-        order.save!
-        order.create_order_items(session[:order_item_ids])
-        current_user.cart.empty_cart
-      end
-
-      if @payment_intent.status == 'succeeded'
-        flash[:success] = 'Order successfully created!'
-      else
-        order.destroy
-        flash[:error] = 'Stripe charge failed.'
-      end
-
-      order
-    rescue Stripe::StripeError => e
-      flash[:error] = "Stripe error: #{e.message}"
-      Rails.logger.error("Stripe error during charge: #{e.message}")
-    rescue StandardError => e
-      flash[:error] = "Failed to create order or order items: #{e.message}"
-      Rails.logger.error("Failed to create order for user: #{current_user.id}")
-      refund_payment(payment_intent_id)
-    end
-  end
 
   def refund_payment(payment_intent_id)
     refund = Stripe::Refund.create(
@@ -73,17 +49,18 @@ class Store::CheckoutController < ApplicationController
       }
     )
     if refund.status == 'succeeded'
-      flash[:info] = 'Payment was refunded.'
+      puts json: { message: 'Payment was refunded.', error_type: "Standard" }
       Rails.logger.info("Payment was refunded: #{refund.id}")
     else
-      flash[:error] = 'Failed to refund payment.'
+      puts json: { message: 'Failed to refund payment.', error_type: "Standard" }
       Rails.logger.warn("Failed to refund payment for payment intent: #{payment_intent_id}")
     end
   rescue Stripe::StripeError => e
-    flash[:error] = "Stripe error: #{e.message}"
-    Rails.logger.error("Stripe error while refunding: #{e.message}")
+    Rails.logger.error("Stripe error during charge: #{e.message}")
+    puts json: { message: e.message, error_type: "Stripe" }
   rescue StandardError => e
-    flash[:error] = "General error: #{e.message}"
-    Rails.logger.error("General error while refunding: #{e.message}")
+    # Rails.logger.error("Failed to create order for user: #{current_user.id}")
+    puts json: { message: e.message, error_type: "Standard" }
+    refund_payment(@payment_intent.id)
   end
 end

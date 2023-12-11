@@ -96,8 +96,9 @@ puts 'Appointment'
       client: invoice.client,
       admin: invoice.admin,
       invoice:,
-      date: Faker::Date.forward,
+      datetime: Faker::Date.forward,
       link: 'this is the appointment link',
+      appointment_type: 'family',
       status: 'available'
     )
   end
