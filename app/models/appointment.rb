@@ -12,6 +12,10 @@ class Appointment < ApplicationRecord
     datetime.to_date
   end
 
+  def self.filter_based_on_date(filter_date)
+    where('DATE(datetime) = ?', filter_date)
+  end
+
   def time
     datetime.strftime('%H:%M:%S %z')
   end
