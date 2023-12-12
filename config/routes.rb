@@ -16,9 +16,8 @@ Rails.application.routes.draw do
   ## Counselling API
   resources :users, only: [:show] do
     scope module: 'counselling' do
-      resources :invoices do
-        resources :appointments
-      end
+      resources :appointments
+      resources :invoices
     end
   end
 
