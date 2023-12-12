@@ -10,7 +10,10 @@ class Store::ItemsController < ApplicationController
     items_array = []
 
     @items.each do |item|
-      items_array << item.as_json.merge(image: url_for(item.images[0]))
+      if item.images.attached?
+        item = item.as_json.merge(image: url_for(item.images[0]))
+      end
+      items_array << item
     end
 
     render_response(200, 'index rendered', :ok, items_array)
@@ -19,8 +22,10 @@ class Store::ItemsController < ApplicationController
   # GET /items/1
   def show
     images_array = []
-    @item.images.each do |image|
-      images_array << url_for(image)
+    if @item.images.attached?
+      @item.images.each do |image|
+        images_array << url_for(image)
+      end
     end
 
     render_response(200, 'show item', :ok, @item.as_json.merge(images: images_array))

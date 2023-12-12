@@ -10,13 +10,19 @@ class UpdatesController < ApplicationController
     updates_array = []
 
     @updates.each do |update|
-      updates_array << update.as_json.merge(image: url_for(update.image))
+      if update.image.attached?
+        update = update.as_json.merge(image: url_for(update.image))
+      end
+      updates_array << update
     end
     render_response(200, 'index rendered', :ok, updates_array)
   end
 
   # GET /updates/1
   def show
+    if @update.image.attached?
+      @update = @update.as_json.merge(image: url_for(@update.image))
+    end
     render_response(200, 'show update', :ok, @update.as_json.merge(image: url_for(@update.image)))
   end
 
