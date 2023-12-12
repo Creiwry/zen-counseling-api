@@ -23,7 +23,7 @@ class UpdatesController < ApplicationController
     if @update.image.attached?
       @update = @update.as_json.merge(image: url_for(@update.image))
     end
-    render_response(200, 'show update', :ok, @update.as_json.merge(image: url_for(@update.image)))
+    render_response(200, 'show update', :ok, @update)
   end
 
   # POST /updates
