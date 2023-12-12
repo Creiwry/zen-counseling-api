@@ -7,12 +7,23 @@ class Store::ItemsController < ApplicationController
   def index
     @items = Item.all
 
-    render json: @items
+    items_array = []
+
+    @items.each do |item|
+      items_array << item.as_json.merge(image: url_for(item.images[0]))
+    end
+
+    render_response(200, 'index rendered', :ok, items_array)
   end
 
   # GET /items/1
   def show
-    render json: @item
+    images_array = []
+    @item.images.each do |image|
+      images_array << url_for(image)
+    end
+
+    render_response(200, 'show item', :ok, @item.as_json.merge(images: images_array))
   end
 
   # POST /items
@@ -20,24 +31,25 @@ class Store::ItemsController < ApplicationController
     @item = Item.new(item_params)
 
     if @item.save
-      render json: @item, status: :created, location: @item
+      render_response(201, 'item created', :created, @item)
     else
-      render json: @item.errors, status: :unprocessable_entity
+      render_response(422, @item.errors, :unprocessable_entity, nil)
     end
   end
 
   # PATCH/PUT /items/1
   def update
     if @item.update(item_params)
-      render json: @item
+      render_response(200, 'resource updated successfully', :ok, @item)
     else
-      render json: @item.errors, status: :unprocessable_entity
+      render_response(422, @item.errors, :unprocessable_entity, @item)
     end
   end
 
   # DELETE /items/1
   def destroy
     @item.destroy!
+    render_response(200, 'resource deleted successfully', :ok, nil)
   end
 
   private
@@ -49,7 +61,7 @@ class Store::ItemsController < ApplicationController
   def check_if_admin
     return if current_user.admin
 
-    render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
+    render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
   end
 
 

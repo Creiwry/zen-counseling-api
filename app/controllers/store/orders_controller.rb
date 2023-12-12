@@ -1,53 +1,56 @@
 class Store::OrdersController < ApplicationController
-  before_action :set_order, only: %i[ show update destroy ]
+  before_action :set_order, only: %i[show update destroy]
   before_action :authenticate_user!
 
   # GET /orders
   def index
     unless current_user.admin || current_user.id == params[:user_id]
-      render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
+      render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
       return
     end
 
     @orders = Order.find_by(user_id: params[:user_id])
 
-    render json: @orders
+    render_response(200, 'index rendered', :ok, @orders)
   end
 
   # GET /orders/1
   def show
     unless current_user.admin || @order.user_id == current_user.id
-      render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
+      render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
       return
     end
-    render json: @order
+
+    render_response(200, 'show order', :ok, @order)
   end
 
   # POST /orders
   def create
     if current_user.cart.create_order(params[:order][:address])[:success] == true
-      render json: { response: 'Order created' }, status: :created
+      render_response(201, 'Order created', :created, @order)
     else
-      render json: { response: current_user.cart.create_order(params[:order][:address]).status }, status: 424
+      response_message = current_user.cart.create_order(params[:order][:address]).status
+      render_response(424, response_message, :failed_dependency, @order)
     end
   end
 
   # PATCH/PUT /orders/1
   def update
     unless current_user.admin || @order.user_id == params[:user_id]
-      render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
+      render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
       return
     end
     if @order.update(order_params)
-      render json: @order
+      render_response(200, 'resource updated successfully', :ok, @order)
     else
-      render json: @order.errors, status: :unprocessable_entity
+      render_response(422, @order.errors, :unprocessable_entity, @order)
     end
   end
 
   # DELETE /orders/1
   def destroy
     @order.destroy!
+    render_response(200, 'resource deleted successfully', :ok, nil)
   end
 
   private

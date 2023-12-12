@@ -6,12 +6,12 @@ class Counselling::AppointmentsController < ApplicationController
   def index
     @appointments = Appointment.all
 
-    render json: @appointments
+    render_response(200, 'index rendered', :ok, @appointments)
   end
 
   # GET /appointments/1
   def show
-    render json: @appointment
+    render_response(200, 'show appointment', :ok, @appointment)
   end
 
   # POST /appointments
@@ -25,24 +25,25 @@ class Counselling::AppointmentsController < ApplicationController
     @appointment.invoice = invoice
 
     if @appointment.save
-      render json: @appointment, status: :created
+      render_response(201, 'Appointment created', :created, @appointment)
     else
-      render json: @appointment.errors, status: :unprocessable_entity
+      render_response(422, @appointment.errors, :unprocessable_entity, nil)
     end
   end
 
   # PATCH/PUT /appointments/1
   def update
     if @appointment.update(appointment_params)
-      render json: @appointment
+      render_response(200, 'resource updated successfully', :ok, @appointment)
     else
-      render json: @appointment.errors, status: :unprocessable_entity
+      render_response(422, @appointment.errors, :unprocessable_entity, @appointment)
     end
   end
 
   # DELETE /appointments/1
   def destroy
     @appointment.destroy!
+    render_response(200, 'resource deleted successfully', :ok, nil)
   end
 
   private

@@ -1,27 +1,27 @@
 class Counselling::InvoicesController < ApplicationController
-  before_action :set_invoice, only: %i[ show update destroy ]
+  before_action :set_invoice, only: %i[show update destroy]
   before_action :authenticate_user!
   before_action :check_if_admin, only: %i[create update destroy]
 
   # GET /invoices
   def index
     unless current_user.admin || current_user.id == params[:user_id].to_i
-      render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
+      render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
       return
     end
+
     @invoices = Invoice.where(client_id: params[:user_id].to_i)
 
-    render json: @invoices
+    render_response(200, 'index rendered', :ok, @invoices)
   end
-
 
   # GET /invoices/1
   def show
     unless current_user.admin || current_user.id == @invoice.client_id
-      render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
+      render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
       return
     end
-    render json: @invoice
+    render_response(200, 'show item', :ok, @item)
   end
 
   # POST /invoices
@@ -33,9 +33,9 @@ class Counselling::InvoicesController < ApplicationController
     @invoice.create_appointments
 
     if @invoice.save
-      render json: @invoice, status: :created
+      render_response(201, 'item created', :created, @invoice)
     else
-      render json: @invoice.errors, status: :unprocessable_entity
+      render_response(422, @invoice.errors, :unprocessable_entity, nil)
     end
   end
 
@@ -43,15 +43,16 @@ class Counselling::InvoicesController < ApplicationController
   def update
     if @invoice.update(invoice_params)
       @invoice.update_appointments
-      render json: @invoice
+      render_response(200, 'resource updated successfully', :ok, @invoice)
     else
-      render json: @invoice.errors, status: :unprocessable_entity
+      render_response(422, @invoice.errors, :unprocessable_entity, @invoice)
     end
   end
 
   # DELETE /invoices/1
   def destroy
     @invoice.destroy!
+    render_response(200, 'resource deleted successfully', :ok, nil)
   end
 
   private
