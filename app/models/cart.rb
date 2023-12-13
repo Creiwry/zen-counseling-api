@@ -7,13 +7,18 @@ class Cart < ApplicationRecord
   def cart_items_display
     display_items_array = []
     self.cart_items.each do |cart_item|
+      if cart_item.item.images.attached?
+        image_url = url_for(cart_item.item.images[0])
+      else
+        image_url = nil
+      end
       item = {
         cart_item_id: cart_item.id,
         item_id: cart_item.item_id,
         name: cart_item.item.title,
         description: cart_item.item.description,
         quantity: cart_item.quantity,
-        image: url_for(cart_item.item.images[0]) || nil,
+        image: image_url,
         total_price: cart_item.quantity * cart_item.item.price
       }
       display_items_array << item
