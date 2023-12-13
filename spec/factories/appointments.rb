@@ -3,8 +3,8 @@ FactoryBot.define do
     invoice { nil }
     user { nil }
     admin { nil }
-    date { "2023-12-06 10:17:45" }
+    date { "2024-12-06 10:17:45" }
     link { "MyString" }
-    status { "MyString" }
+    status { "available" }
   end
 end

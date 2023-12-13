@@ -45,6 +45,9 @@ gem 'wkhtmltopdf-binary'
 
 gem "dotenv-rails", "~> 2.8"
 
+gem 'stripe', '~> 9.0'
+gem 'validates_timeliness', '~> 7.0.0.beta1'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "rspec-rails"

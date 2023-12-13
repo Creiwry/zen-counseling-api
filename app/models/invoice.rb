@@ -7,7 +7,8 @@ class Invoice < ApplicationRecord
   has_many :appointments
 
   validates :appointment_number, presence: true, numericality: {
-    only_integer: true
+    only_integer: true,
+    greater_than: 0
   }
   validates :total, presence: true, numericality: {
     greater_than: 0
@@ -20,18 +21,18 @@ class Invoice < ApplicationRecord
         invoice: self,
         admin: self.admin,
         client: self.client,
-        date: nil,
-        link: nil,
+        link: "this is the link",
+        date: DateTime.now + 1.year,
         status: 'unpaid'
       )
     end
   end
 
   def update_appointments
-    self.appointments.each do |appointment|
-      if self.status == 'paid'
-        appointment.update(status: 'available')
-      end
+    appointments_to_update = Appointment.where(invoice: self)
+
+    appointments_to_update.each do |appointment|
+      appointment.update(status: 'available') if self.status == 'paid'
     end
   end
 end

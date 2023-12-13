@@ -3,12 +3,10 @@ class Update < ApplicationRecord
   belongs_to :admin, class_name: 'User', foreign_key: 'admin_id'
 
   validates :title, presence: true, length: {
-    maximum: 25,
-    too_long: "%{count} characters is the maximum allowed"
+    maximum: 25
   }
 
   validates :content, presence: true, length: {
-    maximum: 1000,
-    too_long: "%{count} characters is the maximum allowed"
+    maximum: 1000
   }
 end

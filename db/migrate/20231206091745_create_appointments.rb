@@ -4,7 +4,7 @@ class CreateAppointments < ActiveRecord::Migration[7.1]
       t.references :invoice, null: false, foreign_key: true
       t.references :client, null: false, foreign_key: { to_table: :users }
       t.references :admin, null: false, foreign_key: { to_table: :users } 
-      t.datetime :date
+      t.datetime :datetime
       t.string :link
       t.string :status
 

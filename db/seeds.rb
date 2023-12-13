@@ -23,7 +23,8 @@ puts 'Cart'
     admin: false,
     email: Faker::Internet.email,
     password: 'Password!23',
-    username: Faker::Internet.username
+    first_name: Faker::Name.first_name,
+    last_name: Faker::Name.last_name
   )
   # Cart.create!(user:)
 end
@@ -74,7 +75,7 @@ puts 'Update'
 5.times do
   Update.create!(
     admin:,
-    title: Faker::Lorem.words(number: 3).join(' '),
+    title: Faker::Lorem.words(number: 3).join(' ').slice(0, 20),
     content: Faker::Lorem.paragraph
   )
 end
@@ -95,9 +96,10 @@ puts 'Appointment'
       client: invoice.client,
       admin: invoice.admin,
       invoice:,
-      date: Faker::Date.forward,
+      datetime: Faker::Date.forward,
       link: 'this is the appointment link',
-      status: 'unpaid'
+      appointment_type: 'family',
+      status: 'available'
     )
   end
 end
