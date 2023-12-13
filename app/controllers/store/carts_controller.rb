@@ -4,7 +4,7 @@ class Store::CartsController < ApplicationController
   def show
     @cart = Cart.find_by(user: current_user)
 
-    render_response(200, 'get cart successful', :ok, { cart: @cart, cart_items: @cart.cart_items_display })
+    render_response(200, 'get cart successful', :ok, { cart_items: @cart.cart_items_display })
   end
 
   private

@@ -9,6 +9,7 @@ class Cart < ApplicationRecord
     self.cart_items.each do |cart_item|
       item = {
         cart_item_id: cart_item.id,
+        item_id: cart_item.item_id,
         name: cart_item.item.title,
         description: cart_item.item.description,
         quantity: cart_item.quantity,
