@@ -13,7 +13,7 @@ class Cart < ApplicationRecord
         name: cart_item.item.title,
         description: cart_item.item.description,
         quantity: cart_item.quantity,
-        image: cart_item.item.images[0] || nil,
+        image: url_for(cart_item.item.images[0]) || nil,
         total_price: cart_item.quantity * cart_item.item.price
       }
       display_items_array << item
