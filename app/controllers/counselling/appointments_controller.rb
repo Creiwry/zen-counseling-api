@@ -6,13 +6,17 @@ class Counselling::AppointmentsController < ApplicationController
   def index
     appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
 
-    if params[:date] != ''
-      date = params[:date].to_date
-      appointments = appointments.filter_based_on_date(date)
-    end
+
     render_response(200, 'index rendered', :ok, appointments)
   end
 
+  def index_by_date
+    appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
+
+    date = params[:appointment_date].to_date
+    appointments = appointments.filter_based_on_date(date)
+    render_response(200, 'index rendered', :ok, appointments)
+  end
   # GET /appointments/1
   def show
     if current_user == @appointment.admin || current_user == @appointment.client
