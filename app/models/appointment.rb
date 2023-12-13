@@ -17,6 +17,11 @@ class Appointment < ApplicationRecord
     where('DATE(datetime) = ?', filter_date)
   end
 
+  def attach_information_of_other_user(user_type)
+    other_user = user_type == 'admin' ? "#{admin.first_name} #{admin.last_name}" : "#{client.first_name} #{client.last_name}" 
+    self.as_json.merge(other_user_name: other_user)
+  end
+
   # def check_conditions
   #   raise 'cannot destroy appointment' unless status == 'past' || status == ''
   # end
