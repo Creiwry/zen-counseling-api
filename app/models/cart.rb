@@ -8,6 +8,8 @@ class Cart < ApplicationRecord
     display_items_array = []
     self.cart_items.each do |cart_item|
       if cart_item.item.images.attached?
+        puts "image attached"
+        puts cart_item.item.images[0]
         image_url = url_for(cart_item.item.images[0])
       else
         image_url = nil
