@@ -30,6 +30,7 @@ Rails.application.routes.draw do
     end
   end
 
+  get '/pending_appointments', to: 'counselling/appointments#index_pending_confirmation'
   get '/users/:user_id/appointments/by_date/:appointment_date', to: 'counselling/appointments#index_by_date'
   patch '/cart/cart_items/:id', to: 'store/cart_items#update'
   delete '/cart/cart_items/:id', to: 'store/cart_items#destroy'

@@ -2,6 +2,15 @@ class Counselling::AppointmentsController < ApplicationController
   before_action :set_appointment, only: %i[show update destroy]
   before_action :authenticate_user!
 
+  def index_pending_confirmation
+    unless current_user.admin
+      render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
+      return
+    end
+    appointments_to_send = Appointment.filter_pending_confirmation(current_user)
+
+    render_response(200, 'index rendered', :ok, appointments_to_send)
+  end
   # GET /appointments
   def index
     appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
@@ -27,6 +36,7 @@ class Counselling::AppointmentsController < ApplicationController
 
     render_response(200, 'index rendered', :ok, appointments_to_send)
   end
+
   # GET /appointments/1
   def show
     if current_user == @appointment.admin || current_user == @appointment.client
