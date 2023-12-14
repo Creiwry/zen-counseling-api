@@ -22,18 +22,22 @@ class User < ApplicationRecord
   has_many :orders
   has_many :order_items, through: :orders
 
-
   has_many :sent_messages, class_name: 'PrivateMessage', foreign_key: 'sender_id'
   has_many :message_recipients, foreign_key: :recipient_id
   has_many :received_messages, through: :message_recipients, source: :private_message
 
   validates :admin, inclusion: [true, false]
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-   
 
   validates_with Validators::PasswordRegexValidator
 
   def create_cart
     Cart.create!(user: self)
+  end
+
+  def send_message(recipient, content)
+    message = PrivateMessage.create(sender: self, content:)
+    MessageRecipient.create(private_message: message, recipient:)
+    message
   end
 end

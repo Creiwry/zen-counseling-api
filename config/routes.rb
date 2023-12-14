@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  resources :message_recipients
-  resources :private_messages
-
   get '/users', to: 'users#index'
 
   get '/current_user', to: 'current_user#index'
@@ -18,6 +15,7 @@ Rails.application.routes.draw do
   ## Counselling API
   resources :users, only: [:show] do
     scope module: 'counselling' do
+      resources :private_messages
       resources :appointments
       resources :invoices
     end
