@@ -6,16 +6,31 @@ class Counselling::AppointmentsController < ApplicationController
   def index
     appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
 
-    if params[:date] != ''
-      date = params[:date].to_date
-      appointments = appointments.filter_based_on_date(date)
+    appointments_to_send = []
+    user_type = current_user.admin ? 'admin' : 'client'
+    appointments.each do |appointment|
+      appointments_to_send << appointment.attach_information_of_other_user(user_type)
     end
-    render_response(200, 'index rendered', :ok, appointments)
+    render_response(200, 'index rendered', :ok, appointments_to_send)
   end
 
+  def index_by_date
+    appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
+
+    date = params[:appointment_date].to_date
+    appointments = appointments.filter_based_on_date(date)
+    appointments_to_send = []
+    user_type = current_user.admin ? 'admin' : 'client'
+    appointments.each do |appointment|
+      appointments_to_send << appointment.attach_information_of_other_user(user_type)
+    end
+
+    render_response(200, 'index rendered', :ok, appointments_to_send)
+  end
   # GET /appointments/1
   def show
     if current_user == @appointment.admin || current_user == @appointment.client
+      @appointment = @appointment.attach_information_of_other_user(current_user.admin ? 'admin' : 'client')
       render_response(200, 'show appointment', :ok, @appointment)
     else
       render_response(401, 'You are not authorized to create this resource', :unauthorized, nil)
