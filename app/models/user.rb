@@ -28,7 +28,7 @@ class User < ApplicationRecord
   validates_with Validators::PasswordRegexValidator
 
   def available_appointment
-    admin_appointments.find_by(status: 'available')
+    client_appointments.find_by(status: 'available')
   end
 
   def create_cart
