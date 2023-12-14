@@ -18,6 +18,10 @@ class Appointment < ApplicationRecord
     where('DATE(datetime) = ?', filter_date)
   end
 
+  def self.filter_pending_confirmation(admin)
+    where(admin:).where(status: 'unconfirmed')
+  end
+
   def attach_information_of_other_user(user_type)
     other_user = user_type == 'admin' ? "#{client.first_name} #{client.last_name}" : "#{admin.first_name} #{admin.last_name}" 
     self.as_json.merge(other_user_name: other_user)

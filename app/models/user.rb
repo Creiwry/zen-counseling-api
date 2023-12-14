@@ -31,6 +31,10 @@ class User < ApplicationRecord
 
   validates_with Validators::PasswordRegexValidator
 
+  def available_appointment
+    client_appointments.find_by(status: 'available')
+  end
+
   def create_cart
     Cart.create!(user: self)
   end
