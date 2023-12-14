@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :message_recipients
+  resources :private_messages
 
   get '/users', to: 'users#index'
 
