@@ -36,7 +36,7 @@ class Counselling::AppointmentsController < ApplicationController
     appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
 
     date = params[:appointment_date].to_date
-    appointments = appointments.filter_based_on_date(date)
+    appointments = appointments.filter_based_on_date(date).where(status: 'confirmed')
     appointments_to_send = []
     user_type = current_user.admin ? 'admin' : 'client'
     appointments.each do |appointment|
