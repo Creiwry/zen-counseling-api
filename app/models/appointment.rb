@@ -18,7 +18,7 @@ class Appointment < ApplicationRecord
   end
 
   def attach_information_of_other_user(user_type)
-    other_user = user_type == 'admin' ? "#{admin.first_name} #{admin.last_name}" : "#{client.first_name} #{client.last_name}" 
+    other_user = user_type == 'admin' ? "#{client.first_name} #{client.last_name}" : "#{admin.first_name} #{admin.last_name}" 
     self.as_json.merge(other_user_name: other_user)
   end
 
