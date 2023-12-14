@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_14_133315) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_14_132941) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -96,15 +96,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_14_133315) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "message_recipients", force: :cascade do |t|
-    t.bigint "private_message_id"
-    t.bigint "recipient_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["private_message_id"], name: "index_message_recipients_on_private_message_id"
-    t.index ["recipient_id"], name: "index_message_recipients_on_recipient_id"
-  end
-
   create_table "order_items", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.bigint "item_id", null: false
@@ -127,9 +118,11 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_14_133315) do
 
   create_table "private_messages", force: :cascade do |t|
     t.text "content"
+    t.bigint "recipient_id"
+    t.bigint "sender_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "sender_id", null: false
+    t.index ["recipient_id"], name: "index_private_messages_on_recipient_id"
     t.index ["sender_id"], name: "index_private_messages_on_sender_id"
   end
 
@@ -169,11 +162,10 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_14_133315) do
   add_foreign_key "carts", "users"
   add_foreign_key "invoices", "users", column: "admin_id"
   add_foreign_key "invoices", "users", column: "client_id"
-  add_foreign_key "message_recipients", "private_messages", on_delete: :cascade
-  add_foreign_key "message_recipients", "users", column: "recipient_id", on_delete: :cascade
   add_foreign_key "order_items", "items"
   add_foreign_key "order_items", "orders"
   add_foreign_key "orders", "users"
+  add_foreign_key "private_messages", "users", column: "recipient_id", on_delete: :cascade
   add_foreign_key "private_messages", "users", column: "sender_id", on_delete: :cascade
   add_foreign_key "updates", "users", column: "admin_id"
 end

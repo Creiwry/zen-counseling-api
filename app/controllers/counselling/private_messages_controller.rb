@@ -1,15 +1,22 @@
 class Counselling::PrivateMessagesController < ApplicationController
   before_action :set_private_message, only: %i[show update destroy]
   before_action :authenticate_user!
+  before_action :check_user_access, only: %i[show]
+  before_action :check_user_sender, only: %i[update destroy]
 
   # GET /private_messages
   def index
-    @private_messages = PrivateMessage.all
     other_user = User.find(params[:user_id])
-    sent_messages = PrivateMessage.find_conversation_messages(current_user, other_user)
-    received_messages = PrivateMessage.find_conversation_messages(other_user, current_user)
+    sent_messages = PrivateMessage.where(sender: current_user).where(recipient: other_user)
+    received_messages = PrivateMessage.where(recipient: current_user).where(sender: other_user)
 
     render_response(200, 'index rendered', :ok, { sent_messages:, received_messages: })
+  end
+
+  def list_chats
+    other_chat_users = current_user.existing_chats
+
+    render_response(200, 'index other chat users', :ok, other_chat_users)
   end
 
   # GET /private_messages/1
@@ -19,11 +26,14 @@ class Counselling::PrivateMessagesController < ApplicationController
 
   # POST /private_messages
   def create
-    # @private_message = PrivateMessage.new(private_message_params)
     recipient = User.find(params[:user_id])
-    message = current_user.send_message(recipient, params[:private_message][:content])
+    @message = PrivateMessage.new(recipient:, sender: current_user, content: params[:private_message][:content])
 
-    render_response(201, 'Appointment created', :created, message)
+    if @message.save
+      render_response(201, 'Appointment created', :created, @message)
+    else
+      render_response(422, @message.errors, :unprocessable_entity, nil)
+    end
   end
 
   # PATCH/PUT /private_messages/1
@@ -42,6 +52,18 @@ class Counselling::PrivateMessagesController < ApplicationController
   end
 
   private
+
+  def check_user_access
+    return if @private_message.sender == current_user || @private_message.recipient == current_user
+
+    render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
+  end
+
+  def check_user_sender
+    return if @private_message.sender == current_user
+
+    render_response(401, 'You are not authorized to edit this resource', :unauthorized, nil)
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_private_message
