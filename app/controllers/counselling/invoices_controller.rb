@@ -68,8 +68,9 @@ class Counselling::InvoicesController < ApplicationController
   def check_if_admin
     return if current_user.admin
 
-    render json: { status: 401, message: "You are not authorized to access this resource" }, status: 401
+    render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
   end
+
   # Only allow a list of trusted parameters through.
   def invoice_params
     params.require(:invoice).permit(:appointment_number, :total, :status, :user_id, :admin_id, :stripe_customer_id, :document)

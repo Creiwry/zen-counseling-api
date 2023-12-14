@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   get '/users', to: 'users#index'
 
   get '/current_user', to: 'current_user#index'
@@ -14,13 +13,16 @@ Rails.application.routes.draw do
   resources :updates
 
   ## Counselling API
-  resources :users, only: [:show] do
-    scope module: 'counselling' do
+  scope module: 'counselling' do
+    resources :private_messages, only: %i[show destroy]
+    resources :users, only: [:show] do
+      resources :private_messages, only: %i[index create]
       resources :appointments
       resources :invoices
     end
   end
 
+  get '/my_chats', to: 'counselling/private_messages#list_chats'
   get '/pending_appointments', to: 'counselling/appointments#index_pending_confirmation'
   get '/available_appointment', to: 'counselling/appointments#available_appointment'
   get '/users/:user_id/appointments/by_date/:appointment_date', to: 'counselling/appointments#index_by_date'
@@ -28,10 +30,14 @@ Rails.application.routes.draw do
   get '/invoices/:invoice_id/session-status', to: 'counselling/checkout#session_status'
 
   ## Store API
-  resources :users, only: [:show] do
-    scope module: 'store' do
+  scope module: 'store' do
+    resources :users, only: [:show] do
       resources :orders
     end
+    resources :items do
+      resources :cart_items, only: [:create]
+    end
+    resources :orders, only: %i[index show]
   end
 
   patch '/cart/cart_items/:id', to: 'store/cart_items#update'
@@ -39,12 +45,6 @@ Rails.application.routes.draw do
   get '/cart', to: 'store/carts#show'
   post '/orders/:order_id/create_checkout_session', to: 'store/checkout#create'
   get '/orders/:order_id/session-status', to: 'store/checkout#session_status'
-  scope module: 'store' do
-    resources :items do
-      resources :cart_items, only: [:create]
-    end
-    resources :orders, only: [:index, :show]
-  end
 
   ## Counseling API
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
