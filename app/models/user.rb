@@ -24,9 +24,12 @@ class User < ApplicationRecord
 
   validates :admin, inclusion: [true, false]
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-   
 
   validates_with Validators::PasswordRegexValidator
+
+  def available_appointment
+    admin_appointments.find_by(status: 'available')
+  end
 
   def create_cart
     Cart.create!(user: self)

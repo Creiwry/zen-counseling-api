@@ -23,6 +23,15 @@ class Counselling::AppointmentsController < ApplicationController
     render_response(200, 'index rendered', :ok, appointments_to_send)
   end
 
+  def available_appointment
+    appointment = current_user.available_appointment
+    if appointment
+      render_response(200, 'resource found', :ok, appointment)
+    else
+      render_response(200, 'resource not found', :ok, false)
+    end
+  end
+
   def index_by_date
     appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
 

@@ -21,8 +21,12 @@ Rails.application.routes.draw do
     end
   end
 
+  get '/pending_appointments', to: 'counselling/appointments#index_pending_confirmation'
+  get '/available_appointment', to: 'counselling/appointments#available_appointment'
+  get '/users/:user_id/appointments/by_date/:appointment_date', to: 'counselling/appointments#index_by_date'
   post '/invoices/:invoice_id/create_checkout_session', to: 'counselling/checkout#create'
   get '/invoices/:invoice_id/session-status', to: 'counselling/checkout#session_status'
+
   ## Store API
   resources :users, only: [:show] do
     scope module: 'store' do
@@ -30,8 +34,6 @@ Rails.application.routes.draw do
     end
   end
 
-  get '/pending_appointments', to: 'counselling/appointments#index_pending_confirmation'
-  get '/users/:user_id/appointments/by_date/:appointment_date', to: 'counselling/appointments#index_by_date'
   patch '/cart/cart_items/:id', to: 'store/cart_items#update'
   delete '/cart/cart_items/:id', to: 'store/cart_items#destroy'
   get '/cart', to: 'store/carts#show'
