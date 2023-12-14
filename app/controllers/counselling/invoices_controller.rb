@@ -29,6 +29,7 @@ class Counselling::InvoicesController < ApplicationController
   def create
     @invoice = Invoice.new(invoice_params)
     user = User.find(params[:user_id])
+    @invoice.status = 'unpaid'
     @invoice.client = user
     @invoice.admin = current_user
     @invoice.create_appointments
