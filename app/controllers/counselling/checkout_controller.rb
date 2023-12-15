@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Counselling::CheckoutController < ApplicationController
-  # before_action :authenticate_user!
+  before_action :authenticate_user!
 
   def create
     invoice = Invoice.find(params[:invoice_id].to_i)
