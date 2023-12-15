@@ -3,6 +3,7 @@ class Counselling::InvoicesController < ApplicationController
   before_action :set_invoice, only: %i[show update destroy]
   before_action :authenticate_user!
   before_action :check_if_admin, only: %i[create update destroy]
+  before_action :check_user_access, only: %i[download_pdf]
 
   # GET /invoices
   def index
@@ -69,6 +70,13 @@ class Counselling::InvoicesController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_invoice
     @invoice = Invoice.find(params[:id])
+  end
+
+  def check_user_access
+    @invoice = Invoice.find(params[:invoice_id])
+    return if @invoice.client == current_user || @invoice.admin == current_user
+
+    render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
   end
 
   def check_if_admin
