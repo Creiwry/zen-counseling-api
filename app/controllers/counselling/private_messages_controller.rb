@@ -10,7 +10,8 @@ class Counselling::PrivateMessagesController < ApplicationController
     sent_messages = PrivateMessage.where(sender: current_user).where(recipient: other_user)
     received_messages = PrivateMessage.where(recipient: current_user).where(sender: other_user)
     all_messages = sent_messages + received_messages
-    all_messages = all_messages.order(:created_at)
+
+    all_messages = all_messages.sort_by(&:created_at) unless all_messages.empty?
 
     render_response(200, 'index rendered', :ok, all_messages)
   end
