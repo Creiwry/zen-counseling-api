@@ -33,7 +33,7 @@ class Counselling::PrivateMessagesController < ApplicationController
     @message = PrivateMessage.new(recipient:, sender: current_user, content: params[:private_message][:content])
 
     if @message.save
-      render_response(201, 'Appointment created', :created, @message)
+      render_response(201, 'Message created', :created, @message)
     else
       render_response(422, @message.errors, :unprocessable_entity, nil)
     end
