@@ -30,7 +30,7 @@ class Counselling::InvoicesController < ApplicationController
     invoice = Invoice.find(params[:invoice_id])
     invoice_url = url_for(invoice.document)
 
-    render_response(200, 'resource found', :ok, invoice_url)
+    render_response(200, 'resource found', :ok, invoice.document)
   end
   # POST /invoices
   def create
