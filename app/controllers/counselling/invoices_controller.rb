@@ -25,6 +25,12 @@ class Counselling::InvoicesController < ApplicationController
     render_response(200, 'show invoice', :ok, { invoice: @invoice, document: url_for(@invoice.document) })
   end
 
+  def download_pdf
+    invoice = Invoice.find(params[:invoice_id])
+    invoice_url = url_for(invoice.document)
+
+    render_response(200, 'resource found', :ok, invoice_url)
+  end
   # POST /invoices
   def create
     @invoice = Invoice.new(invoice_params)
