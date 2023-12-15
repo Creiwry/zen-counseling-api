@@ -32,6 +32,13 @@ class Counselling::AppointmentsController < ApplicationController
     end
   end
 
+  def confirmed_appointments
+    appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
+    appointments = appointments.where(status: 'confirmed')
+
+    render_response(200, 'resources found', :ok, appointments)
+  end
+
   def index_by_date
     appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
 
