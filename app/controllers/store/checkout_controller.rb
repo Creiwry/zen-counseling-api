@@ -12,7 +12,7 @@ class Store::CheckoutController < ApplicationController
         ui_mode: 'embedded',
         line_items: line_items_stripe,
         mode: 'payment',
-        return_url: 'http://localhost:5173/return?session_id={CHECKOUT_SESSION_ID}'
+        return_url: "#{params[:return_url]}?session_id={CHECKOUT_SESSION_ID}"
       }
     )
 
