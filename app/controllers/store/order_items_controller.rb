@@ -1,5 +1,9 @@
-class OrderItemsController < ApplicationController
+##
+# TODO: needed?
+##
+class Store::OrderItemsController < ApplicationController
   before_action :set_order_item, only: %i[ show update destroy ]
+  before_action :authenticate_user!
 
   # GET /order_items
   def index

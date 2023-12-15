@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory(:user) do
-    username { Faker::Internet.username.slice(0, 9) }
+    first_name { Faker::Name.first_name }
+    last_name { Faker::Name.last_name }
     email { Faker::Internet.email }
     password { 'Password!23' }
     admin { false }

@@ -27,9 +27,6 @@ RSpec.describe User, type: :model do
   it { should allow_value('example@example.com').for(:email) }
   it { should_not allow_value('bad_email').for(:email) }
 
-  it { should validate_presence_of(:username) }
-  it { should validate_uniqueness_of(:username) }
-
   it { should validate_inclusion_of(:admin).in_array([true, false]) }
 
   it 'should be valid when password meets criteria' do

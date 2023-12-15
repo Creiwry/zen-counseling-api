@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_14_132941) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -46,11 +46,12 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
     t.bigint "invoice_id", null: false
     t.bigint "client_id", null: false
     t.bigint "admin_id", null: false
-    t.datetime "date"
+    t.datetime "datetime"
     t.string "link"
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "appointment_type"
     t.index ["admin_id"], name: "index_appointments_on_admin_id"
     t.index ["client_id"], name: "index_appointments_on_client_id"
     t.index ["invoice_id"], name: "index_appointments_on_invoice_id"
@@ -115,6 +116,16 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
+  create_table "private_messages", force: :cascade do |t|
+    t.text "content"
+    t.bigint "recipient_id"
+    t.bigint "sender_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipient_id"], name: "index_private_messages_on_recipient_id"
+    t.index ["sender_id"], name: "index_private_messages_on_sender_id"
+  end
+
   create_table "updates", force: :cascade do |t|
     t.string "title"
     t.text "content"
@@ -133,8 +144,9 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "jti", null: false
-    t.boolean "admin"
-    t.string "username"
+    t.boolean "admin", default: false
+    t.string "first_name", null: false
+    t.string "last_name", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -153,5 +165,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_06_131717) do
   add_foreign_key "order_items", "items"
   add_foreign_key "order_items", "orders"
   add_foreign_key "orders", "users"
+  add_foreign_key "private_messages", "users", column: "recipient_id", on_delete: :cascade
+  add_foreign_key "private_messages", "users", column: "sender_id", on_delete: :cascade
   add_foreign_key "updates", "users", column: "admin_id"
 end

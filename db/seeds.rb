@@ -23,7 +23,8 @@ puts 'Cart'
     admin: false,
     email: Faker::Internet.email,
     password: 'Password!23',
-    username: Faker::Internet.username.slice(0, 9)
+    first_name: Faker::Name.first_name,
+    last_name: Faker::Name.last_name
   )
   # Cart.create!(user:)
 end
@@ -95,8 +96,9 @@ puts 'Appointment'
       client: invoice.client,
       admin: invoice.admin,
       invoice:,
-      date: Faker::Date.forward,
+      datetime: Faker::Date.forward,
       link: 'this is the appointment link',
+      appointment_type: 'family',
       status: 'available'
     )
   end

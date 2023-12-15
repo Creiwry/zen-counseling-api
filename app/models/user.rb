@@ -22,16 +22,28 @@ class User < ApplicationRecord
   has_many :orders
   has_many :order_items, through: :orders
 
+  has_many :sent_messages, class_name: 'PrivateMessage', foreign_key: 'sender_id'
+  has_many :received_messages, class_name: 'PrivateMessage', foreign_key: 'recipient_id'
+
   validates :admin, inclusion: [true, false]
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :username, presence: true, uniqueness: true, length: {
-    maximum: 10,
-    too_long: "%{count} characters is the maximum allowed"
-  }
 
   validates_with Validators::PasswordRegexValidator
 
+  def available_appointment
+    client_appointments.find_by(status: 'available')
+  end
+
   def create_cart
     Cart.create!(user: self)
+  end
+
+  def existing_chats
+    recipients_of_my_messages = sent_messages.map(&:recipient)
+    senders_of_my_messages = received_messages.map(&:sender)
+    {
+      senders: senders_of_my_messages,
+      recipients: recipients_of_my_messages
+    }
   end
 end
