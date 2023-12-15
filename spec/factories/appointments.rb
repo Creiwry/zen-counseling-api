@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :appointment do
-    invoice { nil }
-    user { nil }
-    admin { nil }
-    date { "2024-12-06 10:17:45" }
+    invoice { create(:invoice) }
+    client { invoice.client }
+    admin { invoice.admin }
+    datetime { DateTime.new + 3.days }
     link { "MyString" }
     status { "available" }
   end
