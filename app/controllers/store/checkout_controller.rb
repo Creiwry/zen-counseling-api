@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Store::CheckoutController < ApplicationController
-  # before_action :authenticate_user!
+  before_action :authenticate_user!
 
   def create
     order = Order.find(params[:order_id].to_i)

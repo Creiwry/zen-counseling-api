@@ -9,8 +9,10 @@ class Counselling::PrivateMessagesController < ApplicationController
     other_user = User.find(params[:user_id])
     sent_messages = PrivateMessage.where(sender: current_user).where(recipient: other_user)
     received_messages = PrivateMessage.where(recipient: current_user).where(sender: other_user)
+    all_messages = sent_messages + received_messages
+    all_messages = all_messages.order(:created_at)
 
-    render_response(200, 'index rendered', :ok, { sent_messages:, received_messages: })
+    render_response(200, 'index rendered', :ok, all_messages)
   end
 
   def list_chats

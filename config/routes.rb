@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get '/users', to: 'users#index'
+  get '/users/:id', to: 'users#show'
 
   get '/current_user', to: 'current_user#index'
   devise_for :users, path: '/users', path_names: {
@@ -23,6 +24,7 @@ Rails.application.routes.draw do
   end
 
   get '/my_chats', to: 'counselling/private_messages#list_chats'
+  get '/index_admins', to: 'users#index_admins'
   get '/confirmed_appointments', to: 'counselling/appointments#confirmed_appointments'
   get '/pending_appointments', to: 'counselling/appointments#index_pending_confirmation'
   get '/available_appointment', to: 'counselling/appointments#available_appointment'
