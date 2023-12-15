@@ -312,9 +312,9 @@ DEPENDENCIES
   shoulda-matchers (~> 5.3)
   stripe (~> 9.0)
   tzinfo-data
+  validates_timeliness (~> 7.0.0.beta1)
   wicked_pdf
   wkhtmltopdf-binary
-  validates_timeliness (~> 7.0.0.beta1)
 
 RUBY VERSION
    ruby 3.2.2p53
