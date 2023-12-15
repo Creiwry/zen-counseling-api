@@ -50,6 +50,6 @@ class Cart < ApplicationRecord
 
     order.save!
 
-    { success: true }
+    { success: true, order: }
   end
 end
