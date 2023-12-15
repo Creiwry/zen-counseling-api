@@ -26,8 +26,9 @@ class Store::OrdersController < ApplicationController
 
   # POST /orders
   def create
-    if current_user.cart.create_order(params[:order][:address])[:success] == true
-      render_response(201, 'Order created', :created, @order)
+    order = current_user.cart.create_order(params[:order][:address])
+    if order[:success] == true
+      render_response(201, 'Order created', :created, order[:order])
     else
       response_message = current_user.cart.create_order(params[:order][:address]).status
       render_response(424, response_message, :failed_dependency, @order)
