@@ -13,6 +13,12 @@ class UsersController < ApplicationController
     render_response(200, 'index users successful', :ok, @users)
   end
 
+  def show
+    @user = User.find(params[:id])
+
+    render_response(200, 'user found', :ok, {first_name: @user.first_name, last_name: @user.last_name})
+  end
+
   private
 
   def check_if_admin
