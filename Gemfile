@@ -45,6 +45,7 @@ gem 'wkhtmltopdf-binary'
 
 gem "dotenv-rails", "~> 2.8"
 
+gem "faker", "~> 3.2"
 gem 'stripe', '~> 9.0'
 gem 'validates_timeliness', '~> 7.0.0.beta1'
 
@@ -53,7 +54,6 @@ group :development, :test do
   gem "rspec-rails"
   gem "shoulda-matchers", "~> 5.3"
   gem "factory_bot_rails"
-  gem "faker", "~> 3.2"
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end
 

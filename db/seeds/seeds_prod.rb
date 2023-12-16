@@ -1,3 +1,4 @@
+require 'faker'
 OrderItem.destroy_all
 CartItem.destroy_all
 Appointment.destroy_all
