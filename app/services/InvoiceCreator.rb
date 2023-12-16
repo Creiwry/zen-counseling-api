@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module InvoiceCreator
-  def create_invoice_pdf(invoice) 
-    pdf = WickedPdf.new.pdf_from_string(%Q(
+  def create_invoice_pdf(invoice)
+    pdf = WickedPdf.new.pdf_from_string(%(
       <body>
         <style>
         body {

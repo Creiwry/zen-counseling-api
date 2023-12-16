@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :check_if_admin, only: %i[index]
@@ -17,7 +19,7 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
 
-    render_response(200, 'user found', :ok, {first_name: @user.first_name, last_name: @user.last_name})
+    render_response(200, 'user found', :ok, { first_name: @user.first_name, last_name: @user.last_name })
   end
 
   private

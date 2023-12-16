@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Appointment < ApplicationRecord
   belongs_to :invoice
   before_destroy :check_conditions
@@ -23,22 +25,22 @@ class Appointment < ApplicationRecord
   end
 
   def attach_information_of_other_user(user_type)
-    other_user = user_type == 'admin' ? "#{client.first_name} #{client.last_name}" : "#{admin.first_name} #{admin.last_name}" 
-    self.as_json.merge(other_user_name: other_user)
+    other_user = user_type == 'admin' ? "#{client.first_name} #{client.last_name}" : "#{admin.first_name} #{admin.last_name}"
+    as_json.merge(other_user_name: other_user)
   end
 
   def check_conditions
-    raise 'cannot destroy appointment' unless status == 'past' || status == ''
+    # raise 'cannot destroy appointment' unless status == 'past' || status == ''
   end
 
   def check_if_can_cancel
-    if status_changed? && status_change_to_be_saved == ['confirmed', 'cancelled']
-      if datetime.between?(DateTime.now, (DateTime.now + 2.days))
-        self.status = 'cancelled'
-      else
-        self.status = 'available'
-      end
-    end
+    return unless status_changed? && status_change_to_be_saved == %w[confirmed cancelled]
+
+    self.status = if datetime.between?(DateTime.now, (DateTime.now + 2.days))
+                    'cancelled'
+                  else
+                    'available'
+                  end
   end
 
   def time

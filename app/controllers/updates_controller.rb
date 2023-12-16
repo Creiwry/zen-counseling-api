@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdatesController < ApplicationController
   before_action :set_update, only: %i[show update destroy]
   before_action :authenticate_user!, except: %i[show index]
@@ -10,9 +12,7 @@ class UpdatesController < ApplicationController
     updates_array = []
 
     @updates.each do |update|
-      if update.image.attached?
-        update = update.as_json.merge(image: url_for(update.image))
-      end
+      update = update.as_json.merge(image: url_for(update.image)) if update.image.attached?
       updates_array << update
     end
     render_response(200, 'index rendered', :ok, updates_array)
@@ -20,9 +20,7 @@ class UpdatesController < ApplicationController
 
   # GET /updates/1
   def show
-    if @update.image.attached?
-      @update = @update.as_json.merge(image: url_for(@update.image))
-    end
+    @update = @update.as_json.merge(image: url_for(@update.image)) if @update.image.attached?
     render_response(200, 'show update', :ok, @update)
   end
 

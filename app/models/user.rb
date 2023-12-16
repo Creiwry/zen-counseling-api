@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_dependency 'validators/password_regex_validator'
 
 class User < ApplicationRecord

@@ -1,16 +1,18 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.2.2"
+ruby '3.2.2'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1.2"
+gem 'rails', '~> 7.1.2'
 
 # Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
+gem 'pg', '~> 1.1'
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 6.0"
+gem 'puma', '~> 6.0'
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
@@ -25,17 +27,16 @@ gem "puma", "~> 6.0"
 # gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 # Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", require: false
+gem 'bootsnap', require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-gem "rack-cors"
-
+gem 'rack-cors'
 
 gem 'devise'
 gem 'devise-jwt'
@@ -43,18 +44,18 @@ gem 'jsonapi-serializer'
 gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
-gem "dotenv-rails", "~> 2.8"
+gem 'dotenv-rails', '~> 2.8'
 
+gem 'faker', '~> 3.2'
 gem 'stripe', '~> 9.0'
 gem 'validates_timeliness', '~> 7.0.0.beta1'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "rspec-rails"
-  gem "shoulda-matchers", "~> 5.3"
-  gem "factory_bot_rails"
-  gem "faker", "~> 3.2"
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem 'debug', platforms: %i[mri mingw x64_mingw]
+  gem 'factory_bot_rails'
+  gem 'rspec-rails'
+  gem 'shoulda-matchers', '~> 5.3'
 end
 
 group :development do
@@ -62,15 +63,14 @@ group :development do
   # gem "spring"
 end
 
+gem 'minitest', '~> 5.20'
 
-gem "minitest", "~> 5.20"
+gem 'pry', '~> 0.14.2'
 
-gem "pry", "~> 0.14.2"
+gem 'aws-sdk-s3', '~> 1.141'
 
-gem "aws-sdk-s3", "~> 1.141"
+gem 'dockerfile-rails', '>= 1.5', group: :development
 
-gem "dockerfile-rails", ">= 1.5", :group => :development
+gem 'sentry-ruby', '~> 5.14'
 
-gem "sentry-ruby", "~> 5.14"
-
-gem "sentry-rails", "~> 5.14"
+gem 'sentry-rails', '~> 5.14'

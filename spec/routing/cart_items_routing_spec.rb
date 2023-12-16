@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # require "rails_helper"
 
 # RSpec.describe Store::CartItemsController, type: :routing do
@@ -9,7 +10,6 @@
 #     it "routes to #show" do
 #       expect(get: "/cart_items/1").to route_to("cart_items#show", id: "1")
 #     end
-
 
 #     it "routes to #create" do
 #       expect(post: "/cart_items").to route_to("cart_items#create")
