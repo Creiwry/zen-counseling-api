@@ -7,6 +7,10 @@ class ApplicationController < ActionController::API
     render json: { status: 400, message: 'Bad Request: Error occurred while parsing request parameters' }
   end
 
+  rescue_from ActiveRecord::RecordNotFound do |exception|
+    render json: { status: 404, message: "This record was not found #{exception.status}" }
+  end
+
   def render_response(code, message, status, data)
     render json: {
       status: {
