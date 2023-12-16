@@ -57,6 +57,7 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "api_boilerplate_production"
 
   config.action_mailer.perform_caching = false
+  config.action_mailer.default_url_options = { host: 'https://zen-react.fly.dev' }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
@@ -84,4 +85,14 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  ActionMailer::Base.smtp_settings = {
+    user_name: ENV['MAILJET_LOGIN'],
+    password: ENV['MAILJET_PWD'],
+    domain: ENV['MAILJET_DEFAULT_FROM'],
+    address: 'in-v3.mailjet.com',
+    port: 587,
+    authentication: :plain,
+    enable_starttls_auto: true
+  }
 end
