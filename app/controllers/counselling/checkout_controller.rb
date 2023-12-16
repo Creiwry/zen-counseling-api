@@ -19,7 +19,7 @@ class Counselling::CheckoutController < ApplicationController
           quantity: 1
         }],
         mode: 'payment',
-        return_url: "http://localhost:5173#{params[:return_url]}?session_id={CHECKOUT_SESSION_ID}"
+        return_url: "https://zen-react.fly.dev#{params[:return_url]}?session_id={CHECKOUT_SESSION_ID}"
       }
     )
 
