@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # require "rails_helper"
 
 # RSpec.describe UpdatesController, type: :routing do
@@ -9,7 +10,6 @@
 #     it "routes to #show" do
 #       expect(get: "/updates/1").to route_to("updates#show", id: "1")
 #     end
-
 
 #     it "routes to #create" do
 #       expect(post: "/updates").to route_to("updates#create")

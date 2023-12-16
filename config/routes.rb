@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   get '/users', to: 'users#index'
   get '/users/:id', to: 'users#show'
 
   get '/current_user', to: 'current_user#index'
   devise_for :users, path: '/users', path_names: {
-      sign_in: '/sign_in',
-      # log_out: '/log_out'
-    },
-  controllers: {
-      sessions: 'users/sessions',
-      registrations: 'users/registrations'
-    }
+                                       sign_in: '/sign_in'
+                                       # log_out: '/log_out'
+                                     },
+                     controllers: {
+                       sessions: 'users/sessions',
+                       registrations: 'users/registrations'
+                     }
   resources :updates
 
   ## Counselling API

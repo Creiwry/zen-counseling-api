@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Invoice, type: :model do
@@ -17,7 +19,7 @@ RSpec.describe Invoice, type: :model do
   it { should validate_presence_of(:status) }
   it {
     should validate_inclusion_of(:status).in_array(
-      ['unpaid', 'paid', 'cancelled']
+      %w[unpaid paid cancelled]
     )
   }
 end

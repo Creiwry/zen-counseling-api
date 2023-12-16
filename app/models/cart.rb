@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Cart < ApplicationRecord
   belongs_to :user
 
@@ -6,9 +8,9 @@ class Cart < ApplicationRecord
 
   def cart_items_display
     display_items_array = []
-    self.cart_items.each do |cart_item|
+    cart_items.each do |cart_item|
       if cart_item.item.images.attached?
-        puts "image attached"
+        puts 'image attached'
         puts cart_item.item.images[0]
         image_url = url_for(cart_item.item.images[0])
       else
@@ -30,8 +32,8 @@ class Cart < ApplicationRecord
 
   def create_order(address)
     order = Order.new(
-      user: self.user,
-      stripe_customer_id: self.user.orders.last ? self.user.orders.last.stripe_customer_id : '',
+      user:,
+      stripe_customer_id: user.orders.last ? user.orders.last.stripe_customer_id : '',
       total: 0,
       address:,
       status: 'unpaid'

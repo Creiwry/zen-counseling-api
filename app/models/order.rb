@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Order < ApplicationRecord
   before_save :update_item_stock
   belongs_to :user
@@ -9,7 +11,7 @@ class Order < ApplicationRecord
     greater_than: 0
   }
   validates :address, presence: true
-  validates :status, presence: true, inclusion: ['unpaid', 'paid', 'sent', 'cancelled', 'refunded', 'delivered']
+  validates :status, presence: true, inclusion: %w[unpaid paid sent cancelled refunded delivered]
 
   def stripe_line_items
     line_items_stripe = []
@@ -33,11 +35,11 @@ class Order < ApplicationRecord
   end
 
   def order_item_quantity
-    return order_items.group(:item_id).count
+    order_items.group(:item_id).count
   end
 
   def check_stock
-    self.order_item_quantity.each do |item_id, quantity|
+    order_item_quantity.each do |item_id, quantity|
       puts item_id
       item = Item.find(item_id)
       return { success: false, status: "Out of Stock: #{item.title}" } unless item.stock - quantity.to_i >= 0
@@ -46,11 +48,11 @@ class Order < ApplicationRecord
   end
 
   def update_item_stock
-    if status_changed? && status_change_to_be_saved == ['unpaid', 'paid']
-      self.order_item_quantity.each do |item_id, quantity|
-        item = Item.find(item_id)
-        item.update!(stock: item.stock - quantity)
-      end
+    return unless status_changed? && status_change_to_be_saved == %w[unpaid paid]
+
+    order_item_quantity.each do |item_id, quantity|
+      item = Item.find(item_id)
+      item.update!(stock: item.stock - quantity)
     end
   end
 end
