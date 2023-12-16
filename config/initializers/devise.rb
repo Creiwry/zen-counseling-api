@@ -276,7 +276,7 @@ Devise.setup do |config|
     jwt.revocation_requests = [
       ['DELETE', %r{^/users/log_out$}]
     ]
-    jwt.expiration_time = 30.minutes.to_i
+    jwt.expiration_time = 1.day.to_i
   end
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
