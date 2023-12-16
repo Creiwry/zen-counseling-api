@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
   end
 
   rescue_from ActiveRecord::RecordNotFound do |exception|
-    render json: { status: 404, message: "This record was not found #{exception.status}" }
+    render json: { status: 404, message: "This record was not found #{exception.message}" }
   end
 
   def render_response(code, message, status, data)
