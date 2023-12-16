@@ -3,7 +3,7 @@ class Update < ApplicationRecord
   belongs_to :admin, class_name: 'User', foreign_key: 'admin_id'
 
   validates :title, presence: true, length: {
-    maximum: 25
+    maximum:50 
   }
 
   validates :content, presence: true, length: {

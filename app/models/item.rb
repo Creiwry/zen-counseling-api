@@ -8,7 +8,7 @@ class Item < ApplicationRecord
   has_many :orders, through: :order_items
 
   validates :title, presence: true, length: {
-    maximum: 25
+    maximum: 50
   }
   validates :description, presence: true, length: {
     maximum: 1000
