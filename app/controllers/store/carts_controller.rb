@@ -3,7 +3,7 @@
 module Store
   class CartsController < ApplicationController
     before_action :authenticate_user!, only: %i[show update]
-    # GET /car
+
     def show
       @cart = Cart.find_by(user: current_user)
 
