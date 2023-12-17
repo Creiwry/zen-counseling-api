@@ -60,7 +60,7 @@ module Store
         end
 
       else
-        @item.attach(params[:item][:images])
+        @item.images.attach(params[:item][:images])
       end
 
       if @item.update(item_params)
