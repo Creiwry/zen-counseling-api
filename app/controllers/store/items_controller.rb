@@ -45,20 +45,19 @@ module Store
 
     # PATCH/PUT /items/1
     def update
+      new_images_to_attach = []
 
       if @item.images.attached?
-        @item.images.destroy_all
-
         params[:item][:images].each do |image|
           if image.is_a? String
-            @item.images.attach(image)
+            image_to_attach = @item.images.select { |saved_image| url_for(saved_image) == image }
+            new_images_to_attach << image_to_attach
           else
-            downloaded_image = URI.parse(image).open
-            filename = File.basename(downloaded_image.path)
-            @item.images.attach(io: downloaded_image, filename:)
+            new_images_to_attach << image
           end
         end
-
+        @item.images.destroy_all
+        @item.images.attach(new_images_to_attach)
       else
         @item.images.attach(params[:item][:images])
       end
