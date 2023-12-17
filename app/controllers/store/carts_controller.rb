@@ -3,7 +3,7 @@
 module Store
   class CartsController < ApplicationController
     before_action :authenticate_user!, only: %i[show update]
-    # GET /car
+
     def show
       @cart = Cart.find_by(user: current_user)
 
@@ -20,7 +20,7 @@ module Store
     def cart_items_display
       display_items_array = []
       current_user.cart.cart_items.each do |cart_item|
-        image_url = (url_for(cart_item.item.images[0]) if cart_item.item.images.attached?)
+        image_url = cart_item.item.images.attached? ? url_for(cart_item.item.images[0]) : nil
         item = {
           cart_item_id: cart_item.id,
           item_id: cart_item.item_id,
@@ -28,7 +28,7 @@ module Store
           description: cart_item.item.description,
           quantity: cart_item.quantity,
           image: image_url,
-          total_price: cart_item.quantity * cart_item.item.price
+          price: cart_item.item.price
         }
         display_items_array << item
       end

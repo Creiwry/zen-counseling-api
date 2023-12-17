@@ -72,7 +72,7 @@ module Store
         description: cart_item.item.description,
         quantity: cart_item.quantity,
         image: image_url,
-        total_price: cart_item.quantity * cart_item.item.price
+        total_price: cart_item.item.price
       }
     end
 
