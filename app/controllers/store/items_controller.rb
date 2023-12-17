@@ -45,6 +45,24 @@ module Store
 
     # PATCH/PUT /items/1
     def update
+
+      if @item.images.attached?
+        @item.images.destroy_all
+
+        params[:item][:images].each do |image|
+          if File.read(image)
+            @item.images.attach(image)
+          else
+            downloaded_image = URI.parse(image).open
+            filename = File.basename(downloaded_image.path)
+            @item.images.attach(io: downloaded_image, filename:)
+          end
+        end
+
+      else
+        @item.attach(params[:item][:images])
+      end
+
       if @item.update(item_params)
         render_response(200, 'resource updated successfully', :ok, @item)
       else
