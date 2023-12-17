@@ -13,7 +13,7 @@ module Store
       items_array = []
 
       @items.each do |item|
-        item = item.images.attached? ? item.as_json.merge(image: url_for(item.images[0])) : item.as_json.merge(image: nil)
+        item = item.as_json.merge(image: url_for(item.images[0])) if item.images.attached?
         items_array << item
       end
 
@@ -27,8 +27,6 @@ module Store
         @item.images.each do |image|
           images_array << url_for(image)
         end
-      else
-        images_array = nil
       end
 
       render_response(200, 'show item', :ok, @item.as_json.merge(images: images_array))
