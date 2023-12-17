@@ -20,7 +20,7 @@ module Store
     def cart_items_display
       display_items_array = []
       current_user.cart.cart_items.each do |cart_item|
-        image_url = (url_for(cart_item.item.images[0]) if cart_item.item.images.attached?)
+        image_url = cart_item.item.images.attached? ? url_for(cart_item.item.images[0]) : nil
         item = {
           cart_item_id: cart_item.id,
           item_id: cart_item.item_id,
