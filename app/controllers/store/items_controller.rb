@@ -50,7 +50,7 @@ module Store
         @item.images.destroy_all
 
         params[:item][:images].each do |image|
-          if File.read(image)
+          if image.is_a? String
             @item.images.attach(image)
           else
             downloaded_image = URI.parse(image).open
