@@ -51,7 +51,7 @@ module Store
         params[:item][:images].each do |image|
           if image.is_a? String
             image_to_attach = @item.images.select { |saved_image| url_for(saved_image) == image }
-            new_images_to_attach << image_to_attach
+            new_images_to_attach << image_to_attach.blob
           else
             new_images_to_attach << image
           end
