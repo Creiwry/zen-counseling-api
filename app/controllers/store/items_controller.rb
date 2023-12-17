@@ -45,7 +45,17 @@ module Store
 
     # PATCH/PUT /items/1
     def update
-      if @item.update(item_params)
+      existing_images = @item.images
+
+      existing_images.each do |existing_image|
+        url_in_params = params[:item][:images].include?(url_for(existing_image))
+        existing_image.purge unless url_in_params
+      end
+
+      new_images = params[:item][:images].reject { |image| image.is_a?(String) }
+      @item.images.attach(new_images)
+
+      if @item.update(item_params.except(:images))
         render_response(200, 'resource updated successfully', :ok, @item)
       else
         render_response(422, @item.errors, :unprocessable_entity, @item)
