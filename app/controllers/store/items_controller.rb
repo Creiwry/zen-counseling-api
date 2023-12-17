@@ -45,23 +45,40 @@ module Store
 
     # PATCH/PUT /items/1
     def update
+      # new_images_to_attach = []
+
+      # if @item.images.attached?
+      #   params[:item][:images].each do |image|
+      #     if image.is_a? String
+      #       image_to_attach = @item.images.select { |saved_image| url_for(saved_image) == image }
+      #       new_images_to_attach << image_to_attach.blob
+      #     else
+      #       new_images_to_attach << image
+      #     end
+      #   end
+      #   @item.images.destroy_all
+      #   @item.images.attach(new_images_to_attach)
+      # else
+      #   @item.images.attach(params[:item][:images])
+      # end
+
+
       new_images_to_attach = []
 
       if @item.images.attached?
         params[:item][:images].each do |image|
           if image.is_a? String
-            image_to_attach = @item.images.select { |saved_image| url_for(saved_image) == image }
-            new_images_to_attach << image_to_attach.blob
+            image_to_attach = @item.images.find_by(id: image)
+            new_images_to_attach << image_to_attach.blob if image_to_attach
           else
             new_images_to_attach << image
           end
         end
-        @item.images.destroy_all
-        @item.images.attach(new_images_to_attach)
-      else
-        @item.images.attach(params[:item][:images])
+
+        @item.images.purge # Detach the existing images
       end
 
+      @item.images.attach(new_images_to_attach + params[:item][:images])
       if @item.update(item_params)
         render_response(200, 'resource updated successfully', :ok, @item)
       else
