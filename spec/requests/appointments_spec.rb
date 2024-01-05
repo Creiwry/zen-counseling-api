@@ -265,47 +265,138 @@ RSpec.describe '/appointments', type: :request do
     end
   end
 
-  # describe 'GET /pending_appointments' do
-  #   skip
-  #   context 'when unauthenticated' do
-  #     it 'returns an unauthenticated response' do
-  #       expect(response).to be_unauthorized
-  #     end
-  #   end
+  describe 'GET /pending_appointments' do
+    context 'when unauthenticated' do
+      let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'pending') }
 
-  #   context 'when authenticated' do
-  #     context 'when not the relevant user or admin' do
-  #       it 'returns an unauthorized response' do
-  #         expect(response).to be_unauthorized
-  #       end
-  #     end
+      it 'returns an unauthenticated response' do
+        get pending_appointments_path
+        expect(response).to be_unauthorized
+      end
+    end
 
-  #     context 'when the relevant user or admin' do
-  #       it 'returns a successful response' do
-  #         expect(response).to be_successful
-  #       end
-  #     end
-  #   end
-  # end
+    context 'when authenticated' do
+      let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
+
+      context 'when client signed in' do
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: correct_user.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
+        it 'returns an unauthorized response' do
+          get pending_appointments_path, headers: { Authorization: @token }
+          expect(response).to be_unauthorized
+        end
+      end
+
+      context 'when admin signed in' do
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: admin.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
+        it 'returns a successful response' do
+          get pending_appointments_path, headers: { Authorization: @token }
+          expect(response).to be_successful
+        end
+
+        it 'returns data for admin' do
+          get confirmed_appointments_path, headers: { Authorization: @token }
+
+          admin_appointments = admin.admin_appointments.where(status: 'pending')
+          other_apppointments = create_list(:appointment, 2)
+          response_appointments = response.parsed_body['data']
+
+          expect(response_appointments).to match_array(admin_appointments)
+          expect(response_appointments).not_to include(*other_apppointments)
+        end
+      end
+    end
+  end
 
   # describe 'GET /available_appointments' do
-  #   skip
   #   context 'when unauthenticated' do
+  #     let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'pending') }
+
   #     it 'returns an unauthenticated response' do
+  #       get pending_appointments_path
   #       expect(response).to be_unauthorized
   #     end
   #   end
 
   #   context 'when authenticated' do
-  #     context 'when not the relevant user or admin' do
-  #       it 'returns an unauthorized response' do
-  #         expect(response).to be_unauthorized
+  #     skip
+  #     let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
+
+  #     before do
+  #       post '/users/sign_in', params: {
+  #         user: {
+  #           email: correct_user.email,
+  #           password: 'Password!23'
+  #         }
+  #       }
+  #       @token = response.headers['authorization']
+  #     end
+
+  #     it 'returns a successful response' do
+  #       get confirmed_appointments_path, headers: { Authorization: @token }
+  #       expect(response).to be_successful
+  #     end
+
+  #     context 'if user signed in' do
+  #       before do
+  #         post '/users/sign_in', params: {
+  #           user: {
+  #             email: correct_user.email,
+  #             password: 'Password!23'
+  #           }
+  #         }
+  #         @token = response.headers['authorization']
+  #       end
+
+  #       it 'returns data for current user' do
+  #         get confirmed_appointments_path, headers: { Authorization: @token }
+
+  #         user_appointments = correct_user.client_appointments.where(status: 'confirmed')
+  #         other_apppointments = create_list(:appointment, 2)
+  #         response_appointments = response.parsed_body['data']
+
+  #         expect(response_appointments).to match_array(user_appointments)
+  #         expect(response_appointments).not_to include(*other_apppointments)
   #       end
   #     end
 
-  #     context 'when the relevant user or admin' do
-  #       it 'returns a successful response' do
-  #         expect(response).to be_successful
+  #     context 'if admin signed in' do
+  #       before do
+  #         post '/users/sign_in', params: {
+  #           user: {
+  #             email: admin.email,
+  #             password: 'Password!23'
+  #           }
+  #         }
+  #         @token = response.headers['authorization']
+  #       end
+
+  #       it 'returns data for admin' do
+  #         get confirmed_appointments_path, headers: { Authorization: @token }
+
+  #         admin_appointments = admin.admin_appointments.where(status: 'confirmed')
+  #         other_apppointments = create_list(:appointment, 2)
+  #         response_appointments = response.parsed_body['data']
+
+  #         expect(response_appointments).to match_array(admin_appointments)
+  #         expect(response_appointments).not_to include(*other_apppointments)
   #       end
   #     end
   #   end
