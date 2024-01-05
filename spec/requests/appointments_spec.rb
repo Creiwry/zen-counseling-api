@@ -121,7 +121,7 @@ RSpec.describe '/appointments', type: :request do
 
   describe 'GET /users/:user_id/appointments/:id' do
     context 'when unauthenticated' do
-      let(:appointment) { create(:appointment, client: correct_user, admin:) }
+      let!(:appointment) { create(:appointment, client: correct_user, admin:) }
 
       it 'returns an unauthenticated response' do
         get user_appointments_path(user_id: correct_user.id, id: appointment.id)
@@ -131,7 +131,7 @@ RSpec.describe '/appointments', type: :request do
 
     context 'when authenticated' do
       context 'when not the relevant user or admin' do
-        let(:appointment) { create(:appointment, client: correct_user, admin:) }
+        let!(:appointment) { create(:appointment, client: correct_user, admin:) }
 
         before do
           post '/users/sign_in', params: {
@@ -150,7 +150,7 @@ RSpec.describe '/appointments', type: :request do
       end
 
       context 'when the relevant user' do
-        let(:appointment) { create(:appointment, client: correct_user, admin:) }
+        let!(:appointment) { create(:appointment, client: correct_user, admin:) }
 
         before do
           post '/users/sign_in', params: {
@@ -169,7 +169,7 @@ RSpec.describe '/appointments', type: :request do
       end
 
       context 'when admin' do
-        let(:appointment) { create(:appointment, client: correct_user, admin:) }
+        let!(:appointment) { create(:appointment, client: correct_user, admin:) }
 
         before do
           post '/users/sign_in', params: {
@@ -191,7 +191,7 @@ RSpec.describe '/appointments', type: :request do
 
   describe 'GET /confirmed_appointments' do
     context 'when unauthenticated' do
-      let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
 
       it 'returns an unauthenticated response' do
         get confirmed_appointments_path
@@ -200,7 +200,7 @@ RSpec.describe '/appointments', type: :request do
     end
 
     context 'when authenticated' do
-      let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
 
       before do
         post '/users/sign_in', params: {
@@ -232,8 +232,10 @@ RSpec.describe '/appointments', type: :request do
           get confirmed_appointments_path, headers: { Authorization: @token }
 
           user_appointments = correct_user.client_appointments.where(status: 'confirmed')
-          other_apppointments = create_list(:appointment, 2)
-          response_appointments = response.parsed_body['data']
+          user_appointments = user_appointments.map(&:to_json)
+          other_apppointments = create_list(:appointment, 2).map(&:to_json)
+
+          response_appointments = response.parsed_body['data'].map(&:to_json)
 
           expect(response_appointments).to match_array(user_appointments)
           expect(response_appointments).not_to include(*other_apppointments)
@@ -254,9 +256,9 @@ RSpec.describe '/appointments', type: :request do
         it 'returns data for admin' do
           get confirmed_appointments_path, headers: { Authorization: @token }
 
-          admin_appointments = admin.admin_appointments.where(status: 'confirmed')
-          other_apppointments = create_list(:appointment, 2)
-          response_appointments = response.parsed_body['data']
+          admin_appointments = admin.admin_appointments.where(status: 'confirmed').map(&:to_json)
+          other_apppointments = create_list(:appointment, 2).map(&:to_json)
+          response_appointments = response.parsed_body['data'].map(&:to_json)
 
           expect(response_appointments).to match_array(admin_appointments)
           expect(response_appointments).not_to include(*other_apppointments)
@@ -267,7 +269,7 @@ RSpec.describe '/appointments', type: :request do
 
   describe 'GET /pending_appointments' do
     context 'when unauthenticated' do
-      let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'pending') }
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'unconfirmed') }
 
       it 'returns an unauthenticated response' do
         get pending_appointments_path
@@ -276,7 +278,7 @@ RSpec.describe '/appointments', type: :request do
     end
 
     context 'when authenticated' do
-      let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'unconfirmed') }
 
       context 'when client signed in' do
         before do
@@ -312,11 +314,11 @@ RSpec.describe '/appointments', type: :request do
         end
 
         it 'returns data for admin' do
-          get confirmed_appointments_path, headers: { Authorization: @token }
+          get pending_appointments_path, headers: { Authorization: @token }
 
-          admin_appointments = admin.admin_appointments.where(status: 'pending')
-          other_apppointments = create_list(:appointment, 2)
-          response_appointments = response.parsed_body['data']
+          admin_appointments = admin.admin_appointments.where(status: 'unconfirmed').map(&:to_json)
+          other_apppointments = create_list(:appointment, 2).map(&:to_json)
+          response_appointments = response.parsed_body['data'].map(&:to_json)
 
           expect(response_appointments).to match_array(admin_appointments)
           expect(response_appointments).not_to include(*other_apppointments)
@@ -325,82 +327,62 @@ RSpec.describe '/appointments', type: :request do
     end
   end
 
-  # describe 'GET /available_appointments' do
-  #   context 'when unauthenticated' do
-  #     let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'pending') }
+  describe 'GET /available_appointment' do
+    context 'when unauthenticated' do
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'available') }
 
-  #     it 'returns an unauthenticated response' do
-  #       get pending_appointments_path
-  #       expect(response).to be_unauthorized
-  #     end
-  #   end
+      it 'returns an unauthenticated response' do
+        get available_appointment_path
+        expect(response).to be_unauthorized
+      end
+    end
 
-  #   context 'when authenticated' do
-  #     skip
-  #     let(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
+    context 'when authenticated client' do
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'available') }
 
-  #     before do
-  #       post '/users/sign_in', params: {
-  #         user: {
-  #           email: correct_user.email,
-  #           password: 'Password!23'
-  #         }
-  #       }
-  #       @token = response.headers['authorization']
-  #     end
+      before do
+        post '/users/sign_in', params: {
+          user: {
+            email: correct_user.email,
+            password: 'Password!23'
+          }
+        }
+        @token = response.headers['authorization']
+      end
 
-  #     it 'returns a successful response' do
-  #       get confirmed_appointments_path, headers: { Authorization: @token }
-  #       expect(response).to be_successful
-  #     end
+      it 'returns a successful response' do
+        get available_appointment_path, headers: { Authorization: @token }
+        expect(response).to be_successful
+      end
 
-  #     context 'if user signed in' do
-  #       before do
-  #         post '/users/sign_in', params: {
-  #           user: {
-  #             email: correct_user.email,
-  #             password: 'Password!23'
-  #           }
-  #         }
-  #         @token = response.headers['authorization']
-  #       end
+      it 'returns a single available appointment' do
+        get available_appointment_path, headers: { Authorization: @token }
+        my_response = response
 
-  #       it 'returns data for current user' do
-  #         get confirmed_appointments_path, headers: { Authorization: @token }
+        last_appointment = correct_user.available_appointment.to_json
 
-  #         user_appointments = correct_user.client_appointments.where(status: 'confirmed')
-  #         other_apppointments = create_list(:appointment, 2)
-  #         response_appointments = response.parsed_body['data']
+        expect(my_response.parsed_body['data'].to_json).to eq(last_appointment)
+      end
+    end
 
-  #         expect(response_appointments).to match_array(user_appointments)
-  #         expect(response_appointments).not_to include(*other_apppointments)
-  #       end
-  #     end
+    context 'if admin signed in' do
+      before do
+        post '/users/sign_in', params: {
+          user: {
+            email: admin.email,
+            password: 'Password!23'
+          }
+        }
+        @token = response.headers['authorization']
+      end
 
-  #     context 'if admin signed in' do
-  #       before do
-  #         post '/users/sign_in', params: {
-  #           user: {
-  #             email: admin.email,
-  #             password: 'Password!23'
-  #           }
-  #         }
-  #         @token = response.headers['authorization']
-  #       end
+      it 'returns message resource not found' do
+        get available_appointment_path, headers: { Authorization: @token }
 
-  #       it 'returns data for admin' do
-  #         get confirmed_appointments_path, headers: { Authorization: @token }
-
-  #         admin_appointments = admin.admin_appointments.where(status: 'confirmed')
-  #         other_apppointments = create_list(:appointment, 2)
-  #         response_appointments = response.parsed_body['data']
-
-  #         expect(response_appointments).to match_array(admin_appointments)
-  #         expect(response_appointments).not_to include(*other_apppointments)
-  #       end
-  #     end
-  #   end
-  # end
+        expect(response.parsed_body['status']['message']).to eq('resource not found')
+      end
+    end
+  end
 
   # describe 'GET /users/:user_id/appointments/by_date/:appointment_date' do
   #   skip
