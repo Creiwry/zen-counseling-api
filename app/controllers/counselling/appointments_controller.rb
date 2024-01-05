@@ -4,6 +4,7 @@ module Counselling
   class AppointmentsController < ApplicationController
     before_action :set_appointment, only: %i[show update destroy]
     before_action :authenticate_user!
+    before_action :authorize_if_client_or_admin, only: %i[index]
 
     def index_pending_confirmation
       unless current_user.admin
@@ -127,6 +128,12 @@ module Counselling
     def check_client(user)
       appointment = Appointment.find(params[:id])
       user == appointment.client
+    end
+
+    def authorize_if_client_or_admin
+      return if current_user.id == params[:user_id].to_i || current_user.admin
+
+      render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
     end
 
     # Only allow a list of trusted parameters through.

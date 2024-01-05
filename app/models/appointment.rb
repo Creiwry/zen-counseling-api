@@ -30,7 +30,7 @@ class Appointment < ApplicationRecord
   end
 
   def check_conditions
-    # raise 'cannot destroy appointment' unless status == 'past' || status == ''
+    raise 'cannot destroy appointment' unless status == 'past' || status == ''
   end
 
   def check_if_can_cancel
