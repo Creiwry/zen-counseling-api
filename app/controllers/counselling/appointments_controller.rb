@@ -79,7 +79,7 @@ module Counselling
     end
 
     def destroy
-      if check_admin(current_user) || check_client(current_user)
+      if check_admin(current_user)
         @appointment.destroy!
         render_response(200, 'resource deleted successfully', :ok, nil)
       else
