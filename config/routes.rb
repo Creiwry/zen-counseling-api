@@ -20,20 +20,25 @@ Rails.application.routes.draw do
     resources :private_messages, only: %i[show destroy]
     resources :users, only: [:show] do
       resources :private_messages, only: %i[index create]
-      resources :appointments
+      resources :appointments, except: %i[create]
       resources :invoices
     end
   end
 
-  get '/my_chats', to: 'counselling/private_messages#list_chats'
-  get '/index_admins', to: 'users#index_admins'
+  # Appointments
   get '/confirmed_appointments', to: 'counselling/appointments#confirmed_appointments'
   get '/pending_appointments', to: 'counselling/appointments#index_pending_confirmation'
   get '/available_appointment', to: 'counselling/appointments#available_appointment'
   get '/users/:user_id/appointments/by_date/:appointment_date', to: 'counselling/appointments#index_by_date'
+
+  # Invoices
   get '/invoices/:invoice_id/download_pdf', to: 'counselling/invoices#download_pdf'
   post '/invoices/:invoice_id/create_checkout_session', to: 'counselling/checkout#create'
   get '/invoices/:invoice_id/session-status', to: 'counselling/checkout#session_status'
+
+  # Users
+  get '/my_chats', to: 'counselling/private_messages#list_chats'
+  get '/index_admins', to: 'users#index_admins'
 
   ## Store API
   scope module: 'store' do
