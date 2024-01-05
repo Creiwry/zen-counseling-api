@@ -60,7 +60,7 @@ module Counselling
 
     # GET /appointments/1
     def show
-      if current_user == @appointment.admin || current_user == @appointment.client
+      if current_user.admin || current_user == @appointment.client
         @appointment = @appointment.attach_information_of_other_user(current_user.admin ? 'admin' : 'client')
         render_response(200, 'show appointment', :ok, @appointment)
       else

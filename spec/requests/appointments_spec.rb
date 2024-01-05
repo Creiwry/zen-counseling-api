@@ -83,7 +83,7 @@ RSpec.describe '/appointments', type: :request do
         end
       end
 
-      context 'when the relevant user or admin' do
+      context 'when the relevant user' do
         before do
           post '/users/sign_in', params: {
             user: {
@@ -93,6 +93,24 @@ RSpec.describe '/appointments', type: :request do
           }
           @token = response.headers['authorization']
         end
+
+        it 'returns a successful response' do
+          get user_appointments_path(user_id: correct_user.id), headers: { Authorization: @token }
+          expect(response).to be_successful
+        end
+      end
+
+      context 'when admin' do
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: admin.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
         it 'returns a successful response' do
           get user_appointments_path(user_id: correct_user.id), headers: { Authorization: @token }
           expect(response).to be_successful
@@ -101,28 +119,75 @@ RSpec.describe '/appointments', type: :request do
     end
   end
 
-  # describe 'GET /users/:user_id/appointments/:id' do
-  #   skip
-  #   context 'when unauthenticated' do
-  #     it 'returns an unauthenticated response' do
-  #       expect(response).to be_unauthorized
-  #     end
-  #   end
+  describe 'GET /users/:user_id/appointments/:id' do
+    context 'when unauthenticated' do
+      let(:appointment) { create(:appointment, client: correct_user, admin:) }
 
-  #   context 'when authenticated' do
-  #     context 'when not the relevant user or admin' do
-  #       it 'returns an unauthorized response' do
-  #         expect(response).to be_unauthorized
-  #       end
-  #     end
+      it 'returns an unauthenticated response' do
+        get user_appointments_path(user_id: correct_user.id, id: appointment.id)
+        expect(response).to be_unauthorized
+      end
+    end
 
-  #     context 'when the relevant user or admin' do
-  #       it 'returns a successful response' do
-  #         expect(response).to be_successful
-  #       end
-  #     end
-  #   end
-  # end
+    context 'when authenticated' do
+      context 'when not the relevant user or admin' do
+        let(:appointment) { create(:appointment, client: correct_user, admin:) }
+
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: incorrect_user.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
+        it 'returns an unauthorized response' do
+          get user_appointments_path(user_id: correct_user.id, id: appointment.id), headers: { Authorization: @token }
+          expect(response).to be_unauthorized
+        end
+      end
+
+      context 'when the relevant user' do
+        let(:appointment) { create(:appointment, client: correct_user, admin:) }
+
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: correct_user.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
+        it 'returns a successful response' do
+          get user_appointments_path(user_id: correct_user.id, id: appointment.id), headers: { Authorization: @token }
+          expect(response).to be_successful
+        end
+      end
+
+      context 'when admin' do
+        let(:appointment) { create(:appointment, client: correct_user, admin:) }
+
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: admin.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
+        it 'returns a successful response' do
+          get user_appointments_path(user_id: correct_user.id, id: appointment.id), headers: { Authorization: @token }
+          expect(response).to be_successful
+        end
+      end
+    end
+  end
 
   # describe 'GET /confirmed_appointments' do
   #   skip

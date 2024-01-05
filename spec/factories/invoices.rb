@@ -5,7 +5,7 @@ FactoryBot.define do
     appointment_number { 1 }
     total { '9.99' }
     status { 'unpaid' }
-    user { nil }
-    admin { nil }
+    client { create(:user, admin: false) }
+    admin { create(:user, admin: true) }
   end
 end
