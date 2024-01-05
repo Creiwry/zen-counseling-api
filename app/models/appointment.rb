@@ -9,7 +9,7 @@ class Appointment < ApplicationRecord
 
   validates_datetime :datetime, on_or_after: -> { Date.current }
 
-  validates :link, presence: true
+  validates :link, presence: true, format: { with: /\Ahttps:\/\/zoom\.us\// }
   validates :status, presence: true, inclusion: %w[unpaid confirmed available past cancelled unconfirmed]
 
   def date

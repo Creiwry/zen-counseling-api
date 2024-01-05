@@ -6,7 +6,7 @@ FactoryBot.define do
     client { invoice.client }
     admin { invoice.admin }
     datetime { DateTime.now + 3.days }
-    link { 'MyString' }
+    link { 'https://zoom.us/mylink' }
     status { 'available' }
   end
 end

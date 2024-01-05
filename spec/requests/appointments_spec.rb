@@ -45,16 +45,56 @@ RSpec.describe '/appointments', type: :request do
     )
   end
 
+  let!(:invoice) { create(:invoice, client: correct_user, admin:, status: 'paid') }
+
   let(:valid_attributes) do
-    {}
+    {
+      appointment: {
+        client: correct_user,
+        admin:,
+        datetime: DateTime.now + 3.days,
+        link: 'https://zoom.us/my_link',
+        status: 'available'
+      }
+    }
   end
 
   let(:invalid_attributes) do
-    skip('Add a hash of attributes invalid for your model')
+    {
+      appointment: {
+        client: correct_user,
+        admin:,
+        datetime: DateTime.now + 3.days
+      },
+      link: 'this_is_the_link',
+      status: 'available'
+    }
   end
 
-  let(:valid_headers) do
-    {}
+  let(:sql_injection_attributes) do
+    {
+      appointment: {
+        client: correct_user,
+        admin:,
+        datetime: DateTime.now + 3.days,
+        link: "admin'; DROP TABLE users;--",
+        status: 'available'
+
+      }
+    }
+  end
+
+  let(:cross_site_scripting_attributes) do
+    {
+      appointment: {
+        client: correct_user,
+        admin:,
+        datetime: DateTime.now + 3.days,
+        link: "<script>alert('XSS attack');</script>",
+        status: 'available'
+
+      }
+    }
   end
 
   describe 'GET /users/:user_id/appointments' do
@@ -480,10 +520,101 @@ RSpec.describe '/appointments', type: :request do
     end
   end
 
-  # describe 'GET /users/:user_id/appointments/by_date/:appointment_date' do
-  #   skip
+  describe 'PATCH /users/:user_id/appointments' do
+    context 'when unauthenticated' do
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
+
+      it 'returns an unauthenticated response' do
+        patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: valid_attributes
+        expect(response).to be_unauthorized
+      end
+
+      context 'when sql injection attributes are sent' do
+        it 'returns an unauthenticated response' do
+          patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: sql_injection_attributes
+          expect(response).to be_unauthorized
+        end
+      end
+
+      context 'when cross site scription attributes are sent' do
+        it 'returns an unauthenticated response' do
+          patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: cross_site_scripting_attributes
+          expect(response).to be_unauthorized
+        end
+      end
+    end
+
+    context 'when authenticated' do
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
+      context 'when not the relevant user or admin' do
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: incorrect_user.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
+        it 'returns an unauthorized response' do
+          patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: valid_attributes, headers: { Authorization: @token }
+          expect(response).to be_unauthorized
+        end
+
+        context 'when sql injection attributes are sent' do
+          it 'returns an unauthenticated response' do
+            patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: sql_injection_attributes, headers: { Authorization: @token }
+            expect(response).to be_unauthorized
+          end
+        end
+
+        context 'when cross site scription attributes are sent' do
+          it 'returns an unauthenticated response' do
+            patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: cross_site_scripting_attributes, headers: { Authorization: @token }
+            expect(response).to be_unauthorized
+          end
+        end
+      end
+
+      context 'when the relevant user or admin' do
+        let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed') }
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: correct_user.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
+        it 'returns a successful response' do
+          patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: valid_attributes, headers: { Authorization: @token }
+          expect(response).to be_successful
+        end
+
+        context 'when sql injection attributes are sent as link' do
+          it 'returns a bad request response' do
+            patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: sql_injection_attributes, headers: { Authorization: @token }
+            expect(response.status).to eq(422)
+          end
+        end
+
+        context 'when cross site scription attributes are sent as link' do
+          it 'returns a bad request response' do
+            patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: cross_site_scripting_attributes, headers: { Authorization: @token }
+            expect(response.status).to eq(422)
+          end
+        end
+      end
+    end
+  end
+
+  # describe 'DELETE /users/:user_id/appointments/:id' do
   #   context 'when unauthenticated' do
   #     it 'returns an unauthenticated response' do
+  #       skip
   #       expect(response).to be_unauthorized
   #     end
   #   end
@@ -491,34 +622,14 @@ RSpec.describe '/appointments', type: :request do
   #   context 'when authenticated' do
   #     context 'when not the relevant user or admin' do
   #       it 'returns an unauthorized response' do
+  #         skip
   #         expect(response).to be_unauthorized
   #       end
   #     end
 
   #     context 'when the relevant user or admin' do
   #       it 'returns a successful response' do
-  #         expect(response).to be_successful
-  #       end
-  #     end
-  #   end
-  # end
-
-  # describe 'GET /users/:user_id/appointments/by_date/:appointment_date' do
-  #   context 'when unauthenticated' do
-  #     it 'returns an unauthenticated response' do
-  #       expect(response).to be_unauthorized
-  #     end
-  #   end
-
-  #   context 'when authenticated' do
-  #     context 'when not the relevant user or admin' do
-  #       it 'returns an unauthorized response' do
-  #         expect(response).to be_unauthorized
-  #       end
-  #     end
-
-  #     context 'when the relevant user or admin' do
-  #       it 'returns a successful response' do
+  #         skip
   #         expect(response).to be_successful
   #       end
   #     end
