@@ -4,7 +4,7 @@ module Counselling
   class AppointmentsController < ApplicationController
     before_action :set_appointment, only: %i[show update destroy]
     before_action :authenticate_user!
-    before_action :authorize_if_client_or_admin, only: %i[index]
+    before_action :authorize_if_client_or_admin, only: %i[index index_by_date]
 
     def index_pending_confirmation
       unless current_user.admin
@@ -16,7 +16,6 @@ module Counselling
       render_response(200, 'index rendered', :ok, appointments_to_send)
     end
 
-    # GET /appointments
     def index
       appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
 

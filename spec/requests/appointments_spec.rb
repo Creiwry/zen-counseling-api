@@ -384,51 +384,101 @@ RSpec.describe '/appointments', type: :request do
     end
   end
 
-  # describe 'GET /users/:user_id/appointments/by_date/:appointment_date' do
-  #   skip
-  #   context 'when unauthenticated' do
-  #     it 'returns an unauthenticated response' do
-  #       expect(response).to be_unauthorized
-  #     end
-  #   end
+  describe 'GET /users/:user_id/appointments/by_date/:appointment_date' do
+    context 'when unauthenticated' do
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed', datetime: DateTime.now + 3.days) }
 
-  #   context 'when authenticated' do
-  #     context 'when not the relevant user or admin' do
-  #       it 'returns an unauthorized response' do
-  #         expect(response).to be_unauthorized
-  #       end
-  #     end
+      it 'returns an unauthenticated response' do
+        get "/users/#{correct_user.id}/appointments/by_date/08-01-2024"
+        expect(response).to be_unauthorized
+      end
+    end
 
-  #     context 'when the relevant user or admin' do
-  #       it 'returns a successful response' do
-  #         expect(response).to be_successful
-  #       end
-  #     end
-  #   end
-  # end
+    context 'when authenticated' do
+      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed', datetime: DateTime.now + 3.days) }
 
-  # describe 'GET /users/:user_id/appointments/by_date/:appointment_date' do
-  #   skip
-  #   context 'when unauthenticated' do
-  #     it 'returns an unauthenticated response' do
-  #       expect(response).to be_unauthorized
-  #     end
-  #   end
+      context 'when correct client signed in' do
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: correct_user.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
 
-  #   context 'when authenticated' do
-  #     context 'when not the relevant user or admin' do
-  #       it 'returns an unauthorized response' do
-  #         expect(response).to be_unauthorized
-  #       end
-  #     end
+        it 'returns a successful response' do
+          get "/users/#{correct_user.id}/appointments/by_date/08-01-2024", headers: { Authorization: @token }
+          expect(response).to be_successful
+        end
 
-  #     context 'when the relevant user or admin' do
-  #       it 'returns a successful response' do
-  #         expect(response).to be_successful
-  #       end
-  #     end
-  #   end
-  # end
+        it 'returns data for client' do
+          get "/users/#{correct_user.id}/appointments/by_date/08-01-2024", headers: { Authorization: @token }
+
+          client_appointments = correct_user.client_appointments
+                                            .where(status: 'confirmed')
+                                            .filter_based_on_date(DateTime.now + 3.days)
+                                            .map { |appointment| appointment.attach_information_of_other_user('client').to_json }
+
+          other_apppointments = create_list(:appointment, 2).map(&:to_json)
+          response_appointments = response.parsed_body['data'].map(&:to_json)
+
+          expect(response_appointments).to match_array(client_appointments)
+          expect(response_appointments).not_to include(*other_apppointments)
+        end
+      end
+
+      context 'when incorrect client signed in' do
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: incorrect_user.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
+        it 'returns an unauthorized response' do
+          get "/users/#{correct_user.id}/appointments/by_date/08-01-2024", headers: { Authorization: @token }
+          expect(response).to be_unauthorized
+        end
+      end
+
+      context 'when admin signed in' do
+        before do
+          post '/users/sign_in', params: {
+            user: {
+              email: admin.email,
+              password: 'Password!23'
+            }
+          }
+          @token = response.headers['authorization']
+        end
+
+        it 'returns a successful response' do
+          get "/users/#{correct_user.id}/appointments/by_date/08-01-2024", headers: { Authorization: @token }
+          expect(response).to be_successful
+        end
+
+        it 'returns data for admin' do
+          get "/users/#{correct_user.id}/appointments/by_date/08-01-2024", headers: { Authorization: @token }
+
+          admin_appointments = admin.admin_appointments
+                                    .where(status: 'confirmed')
+                                    .filter_based_on_date(DateTime.now + 3.days)
+                                    .map { |appointment| appointment.attach_information_of_other_user('admin').to_json }
+
+          other_apppointments = create_list(:appointment, 2).map(&:to_json)
+          response_appointments = response.parsed_body['data'].map(&:to_json)
+
+          expect(response_appointments).to match_array(admin_appointments)
+          expect(response_appointments).not_to include(*other_apppointments)
+        end
+      end
+    end
+  end
 
   # describe 'GET /users/:user_id/appointments/by_date/:appointment_date' do
   #   skip
