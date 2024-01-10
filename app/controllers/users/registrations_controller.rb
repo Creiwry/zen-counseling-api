@@ -20,6 +20,8 @@ module Users
       if request.method == 'POST' && resource.persisted?
         data = UserSerializer.new(resource).serializable_hash[:data][:attributes]
         render_response(200, 'Signed up successfully', :ok, data)
+      elsif request.method == 'PATCH' && resource.persisted?
+        render_response(200, 'Resource updated successfully', :ok, data)
       elsif request.method == 'DELETE'
         render_response(200, 'Account deleted successfully.', :ok, nil)
       else
