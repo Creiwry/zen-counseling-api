@@ -18,6 +18,7 @@ module Counselling
 
     def index
       appointments = current_user.admin ? Appointment.where(admin: current_user) : Appointment.where(client: current_user)
+      appointments = appointments.where.not(status: 'past')
 
       appointments_to_send = []
       user_type = current_user.admin ? 'admin' : 'client'
