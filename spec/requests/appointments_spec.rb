@@ -457,11 +457,11 @@ RSpec.describe '/appointments', type: :request do
         end
 
         it 'returns data for client', focus: true do
-          get "/users/#{correct_user.id}/appointments/by_date/15-01-2024", headers: { Authorization: @token }
+          get "/users/#{correct_user.id}/appointments/by_date/15-05-2024", headers: { Authorization: @token }
 
           client_appointments = correct_user.client_appointments
                                             .where(status: 'confirmed')
-                                            .filter_based_on_date('15-01-2024')
+                                            .filter_based_on_date('15-05-2024'.to_date)
                                             .map { |appointment| appointment.attach_information_of_other_user('client').to_json }
 
           other_apppointments = create_list(:appointment, 2).map(&:to_json)
@@ -506,11 +506,11 @@ RSpec.describe '/appointments', type: :request do
         end
 
         it 'returns data for admin', focus: true do
-          get "/users/#{correct_user.id}/appointments/by_date/15-01-2024", headers: { Authorization: @token }
+          get "/users/#{correct_user.id}/appointments/by_date/15-05-2024", headers: { Authorization: @token }
 
           admin_appointments = admin.admin_appointments
                                     .where(status: 'confirmed')
-                                    .filter_based_on_date('15-01-2024')
+                                    .filter_based_on_date('15-05-2024'.to_date)
                                     .map { |appointment| appointment.attach_information_of_other_user('admin').to_json }
 
           other_apppointments = create_list(:appointment, 2).map(&:to_json)
