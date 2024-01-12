@@ -23,7 +23,7 @@ class UsersController < ApplicationController
   end
 
   def profile
-    @user = current_user 
+    @user = current_user
     render_response(200, 'user profile info', :ok, @user)
   end
 
