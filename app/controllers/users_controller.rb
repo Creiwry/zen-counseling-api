@@ -22,6 +22,11 @@ class UsersController < ApplicationController
     render_response(200, 'user found', :ok, { first_name: @user.first_name, last_name: @user.last_name })
   end
 
+  def profile
+    @user = current_user 
+    render_response(200, 'user profile info', :ok, @user)
+  end
+
   private
 
   def check_if_admin
