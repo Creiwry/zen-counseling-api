@@ -3,6 +3,7 @@
 Rails.application.routes.draw do
   get '/users', to: 'users#index'
   get '/users/:id', to: 'users#show'
+  get '/user_profile', to: 'users#profile'
 
   get '/current_user', to: 'current_user#index'
   devise_for :users, path: '/users', path_names: {
