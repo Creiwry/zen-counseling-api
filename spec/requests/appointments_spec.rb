@@ -21,7 +21,8 @@ RSpec.describe '/appointments', type: :request do
       password: 'Password!23',
       admin: false,
       first_name: 'Billie Joe',
-      last_name: 'Armstrong'
+      last_name: 'Armstrong',
+      full_name: 'Billie Joe Armstrong'
     )
   end
 
@@ -31,7 +32,8 @@ RSpec.describe '/appointments', type: :request do
       password: 'Password!23',
       admin: false,
       first_name: 'John',
-      last_name: 'Smith'
+      last_name: 'Smith',
+      full_name: 'Billie Joe Armstrong'
     )
   end
 
@@ -41,7 +43,8 @@ RSpec.describe '/appointments', type: :request do
       password: 'Password!23',
       admin: true,
       first_name: 'Gerard',
-      last_name: 'Way'
+      last_name: 'Way',
+      full_name: 'Gerard Arthur Way'
     )
   end
 
@@ -453,12 +456,12 @@ RSpec.describe '/appointments', type: :request do
           expect(response).to be_successful
         end
 
-        it 'returns data for client' do
-          get "/users/#{correct_user.id}/appointments/by_date/08-01-2024", headers: { Authorization: @token }
+        it 'returns data for client', focus: true do
+          get "/users/#{correct_user.id}/appointments/by_date/15-01-2024", headers: { Authorization: @token }
 
           client_appointments = correct_user.client_appointments
                                             .where(status: 'confirmed')
-                                            .filter_based_on_date(DateTime.now + 3.days)
+                                            .filter_based_on_date('15-01-2024')
                                             .map { |appointment| appointment.attach_information_of_other_user('client').to_json }
 
           other_apppointments = create_list(:appointment, 2).map(&:to_json)
@@ -502,12 +505,12 @@ RSpec.describe '/appointments', type: :request do
           expect(response).to be_successful
         end
 
-        it 'returns data for admin' do
-          get "/users/#{correct_user.id}/appointments/by_date/08-01-2024", headers: { Authorization: @token }
+        it 'returns data for admin', focus: true do
+          get "/users/#{correct_user.id}/appointments/by_date/15-01-2024", headers: { Authorization: @token }
 
           admin_appointments = admin.admin_appointments
                                     .where(status: 'confirmed')
-                                    .filter_based_on_date(DateTime.now + 3.days)
+                                    .filter_based_on_date('15-01-2024')
                                     .map { |appointment| appointment.attach_information_of_other_user('admin').to_json }
 
           other_apppointments = create_list(:appointment, 2).map(&:to_json)
