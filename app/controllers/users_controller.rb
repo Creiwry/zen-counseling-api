@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:profile]
   before_action :check_if_admin, only: %i[index]
 
   # GET /updates
@@ -23,7 +23,7 @@ class UsersController < ApplicationController
   end
 
   def profile
-    @user = current_user
+    @user = current_user.as_json(except: [:jti])
     render_response(200, 'user profile info', :ok, @user)
   end
 
