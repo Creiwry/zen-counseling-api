@@ -12,7 +12,6 @@ class Order < ApplicationRecord
   validates :total, presence: true, numericality: {
     greater_than: 0
   }
-  validates :address, presence: true
   validates :status, presence: true, inclusion: %w[unpaid paid sent cancelled refunded delivered]
 
   validates :zip_code, length: { maximum: 10 }
