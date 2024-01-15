@@ -4,6 +4,7 @@ module Store
   class CheckoutController < ApplicationController
     before_action :authenticate_user!
     before_action :auth_user_access
+    before_action :auth_admin, only: [:refund]
 
     def create
       order = Order.find(params[:order_id].to_i)
@@ -53,8 +54,10 @@ module Store
       if refund.status == 'succeeded'
         Rails.logger.info("Payment was refunded: #{refund.id}")
         order.update(status: 'refunded', refundable: false)
+        render_response(200, 'Payment refunded successfully', :ok, order)
       else
         Rails.logger.warn("Failed to refund payment for payment intent: #{payment_intent_id}")
+        render_response(400, 'Failed to refund payment', :bad_request, order)
       end
     rescue Stripe::StripeError => e
       Rails.logger.error("Stripe error during charge: #{e.message}")
@@ -81,6 +84,12 @@ module Store
       Rails.logger.error("Stripe error during charge: #{e.message}")
     rescue StandardError => e
       Rails.logger.error("Failed to create order for user: #{e.message}")
+    end
+
+    def auth_admin
+      return if current_user.admin
+
+      render_response(401, 'You are not authorized to do this action', :unauthorized, nil)
     end
 
     def auth_user_access
