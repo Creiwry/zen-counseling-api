@@ -3,7 +3,7 @@
 module Store
   class CheckoutController < ApplicationController
     before_action :authenticate_user!
-    before_action :auth_user_access
+    before_action :auth_user_access, except: [:refund]
     before_action :auth_admin, only: [:refund]
 
     def create
