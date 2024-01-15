@@ -29,7 +29,9 @@ module Store
       @session = Stripe::Checkout::Session.retrieve(params[:session_id])
       @payment_intent = Stripe::PaymentIntent.retrieve(@session.payment_intent)
 
-      order.update(status: 'paid') if @payment_intent.status == 'succeeded'
+      if @payment_intent.status == 'succeeded'
+        order.update(status: 'paid', payment_intent_id: @payment_intent.id, refundable: true)
+      end
 
       render json: { status: session.status, customer_email: session.customer_details.email }
     rescue Stripe::StripeError => e
@@ -39,6 +41,25 @@ module Store
       Rails.logger.error("Failed to create order for user: #{current_user.id}")
       puts json: { message: e.message, error_type: 'Standard' }
       refund_payment(@payment_intent.id)
+    end
+
+    def refund
+      order = Order.find(params[:order_id])
+      refund = Stripe::Refund.create(
+        {
+          payment_intent: order.payment_intent_id
+        }
+      )
+      if refund.status == 'succeeded'
+        Rails.logger.info("Payment was refunded: #{refund.id}")
+        order.update(status: 'refunded', refundable: false)
+      else
+        Rails.logger.warn("Failed to refund payment for payment intent: #{payment_intent_id}")
+      end
+    rescue Stripe::StripeError => e
+      Rails.logger.error("Stripe error during charge: #{e.message}")
+    rescue StandardError => e
+      Rails.logger.error("Failed to update order for user: #{e.message}")
     end
 
     def cancel; end
@@ -60,7 +81,6 @@ module Store
       Rails.logger.error("Stripe error during charge: #{e.message}")
     rescue StandardError => e
       Rails.logger.error("Failed to create order for user: #{e.message}")
-      refund_payment(@payment_intent.id)
     end
 
     def auth_user_access
