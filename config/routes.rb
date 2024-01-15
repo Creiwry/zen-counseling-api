@@ -57,6 +57,8 @@ Rails.application.routes.draw do
   get '/cart', to: 'store/carts#show'
   post '/orders/:order_id/create_checkout_session', to: 'store/checkout#create'
   get '/orders/:order_id/session-status', to: 'store/checkout#session_status'
+  get '/previous_order', to: 'store/orders#previous_order'
+  get '/orders/:order_id/refund', to: 'store/checkout#refund'
 
   ## Counseling API
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

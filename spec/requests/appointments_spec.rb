@@ -429,7 +429,9 @@ RSpec.describe '/appointments', type: :request do
 
   describe 'GET /users/:user_id/appointments/by_date/:appointment_date' do
     context 'when unauthenticated' do
-      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed', datetime: DateTime.now + 3.days) }
+      let!(:appointment) do
+        create(:appointment, client: correct_user, admin:, status: 'confirmed', datetime: DateTime.now + 3.days)
+      end
 
       it 'returns an unauthenticated response' do
         get "/users/#{correct_user.id}/appointments/by_date/08-01-2024"
@@ -438,7 +440,9 @@ RSpec.describe '/appointments', type: :request do
     end
 
     context 'when authenticated' do
-      let!(:appointment) { create(:appointment, client: correct_user, admin:, status: 'confirmed', datetime: DateTime.now + 3.days) }
+      let!(:appointment) do
+        create(:appointment, client: correct_user, admin:, status: 'confirmed', datetime: DateTime.now + 3.days)
+      end
 
       context 'when correct client signed in' do
         before do
@@ -541,7 +545,8 @@ RSpec.describe '/appointments', type: :request do
 
       context 'when cross site scription attributes are sent' do
         it 'returns an unauthenticated response' do
-          patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: cross_site_scripting_attributes
+          patch user_appointment_path(user_id: correct_user.id, id: appointment.id),
+                params: cross_site_scripting_attributes
           expect(response).to be_unauthorized
         end
       end
@@ -561,20 +566,23 @@ RSpec.describe '/appointments', type: :request do
         end
 
         it 'returns an unauthorized response' do
-          patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: valid_attributes, headers: { Authorization: @token }
+          patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: valid_attributes,
+                                                                                     headers: { Authorization: @token }
           expect(response).to be_unauthorized
         end
 
         context 'when sql injection attributes are sent' do
           it 'returns an unauthenticated response' do
-            patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: sql_injection_attributes, headers: { Authorization: @token }
+            patch user_appointment_path(user_id: correct_user.id, id: appointment.id),
+                  params: sql_injection_attributes, headers: { Authorization: @token }
             expect(response).to be_unauthorized
           end
         end
 
         context 'when cross site scription attributes are sent' do
           it 'returns an unauthenticated response' do
-            patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: cross_site_scripting_attributes, headers: { Authorization: @token }
+            patch user_appointment_path(user_id: correct_user.id, id: appointment.id),
+                  params: cross_site_scripting_attributes, headers: { Authorization: @token }
             expect(response).to be_unauthorized
           end
         end
@@ -593,20 +601,23 @@ RSpec.describe '/appointments', type: :request do
         end
 
         it 'returns a successful response' do
-          patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: valid_attributes, headers: { Authorization: @token }
+          patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: valid_attributes,
+                                                                                     headers: { Authorization: @token }
           expect(response).to be_successful
         end
 
         context 'when sql injection attributes are sent as link' do
           it 'returns a bad request response' do
-            patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: sql_injection_attributes, headers: { Authorization: @token }
+            patch user_appointment_path(user_id: correct_user.id, id: appointment.id),
+                  params: sql_injection_attributes, headers: { Authorization: @token }
             expect(response.status).to eq(422)
           end
         end
 
         context 'when cross site scription attributes are sent as link' do
           it 'returns a bad request response' do
-            patch user_appointment_path(user_id: correct_user.id, id: appointment.id), params: cross_site_scripting_attributes, headers: { Authorization: @token }
+            patch user_appointment_path(user_id: correct_user.id, id: appointment.id),
+                  params: cross_site_scripting_attributes, headers: { Authorization: @token }
             expect(response.status).to eq(422)
           end
         end
