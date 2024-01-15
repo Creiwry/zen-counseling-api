@@ -86,6 +86,13 @@ module Store
       Rails.logger.error("Failed to create order for user: #{e.message}")
     end
 
+    def check_refundable
+      order = Order.find(params[:order_id])
+      return if order.refundable
+
+      render_response(400, 'This payment is not refundable', :bad_request, nil)
+    end
+
     def auth_admin
       return if current_user.admin
 

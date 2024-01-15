@@ -36,6 +36,7 @@ Rails.application.routes.draw do
   get '/invoices/:invoice_id/download_pdf', to: 'counselling/invoices#download_pdf'
   post '/invoices/:invoice_id/create_checkout_session', to: 'counselling/checkout#create'
   get '/invoices/:invoice_id/session-status', to: 'counselling/checkout#session_status'
+  get '/invoices/:invoice_id/refund', to: 'counselling/checkout#refund'
 
   # Users
   get '/my_chats', to: 'counselling/private_messages#list_chats'
