@@ -5,6 +5,7 @@ module Counselling
     before_action :authenticate_user!
     before_action :auth_user_access, except: [:refund]
     before_action :auth_admin, only: [:refund]
+    before_action :check_refundable, only: [:refund]
 
     def create
       invoice = Invoice.find(params[:invoice_id].to_i)
@@ -95,6 +96,13 @@ module Counselling
       return if current_user.admin
 
       render_response(401, 'You are not authorized to do this action', :unauthorized, nil)
+    end
+
+    def check_refundable
+      invoice = Invoice.find(params[:invoice_id])
+      return if invoice.refundable
+
+      render_response(400, 'This payment is not refundable', :bad_request, nil)
     end
 
     def auth_user_access
