@@ -16,7 +16,7 @@ class Order < ApplicationRecord
 
   validates :zip_code, length: { maximum: 10 }
   validates :city, format: { with: /\A[a-zA-Z\u0080-\u024F]+(?:[. \-]|[' ]|[a-zA-Z\u0080-\u024F])*\z/ }
-  validates :street_address, format: { with: /\A\s*\S+(?:\s+\S+){2}\z/ }
+  validates :street_address, format: { with: /\A\s*\S.*\z/ }
   validates_with Validators::CountryNameValidator
 
   def stripe_line_items
