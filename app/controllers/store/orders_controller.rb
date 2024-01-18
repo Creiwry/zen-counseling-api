@@ -12,7 +12,7 @@ module Store
         return
       end
 
-      @orders = Order.find_by(user_id: params[:user_id])
+      @orders = Order.where(user_id: params[:user_id])
 
       render_response(200, 'index rendered', :ok, @orders)
     end
