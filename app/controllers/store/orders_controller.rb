@@ -7,7 +7,7 @@ module Store
 
     # GET /orders
     def index
-      unless current_user.admin || current_user.id == params[:user_id]
+      unless current_user.admin || current_user.id == params[:user_id].to_i
         render_response(401, 'You are not authorized to access this resource', :unauthorized, nil)
         return
       end
