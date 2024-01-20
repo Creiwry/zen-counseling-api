@@ -17,6 +17,24 @@ module Store
       render_response(200, 'index rendered', :ok, @orders)
     end
 
+    def previous_order
+      if current_user.orders.last
+        order = current_user.orders.last
+        data = {
+          previous_order: true,
+          address: {
+            country: order.country,
+            city: order.city,
+            street_address: order.street_address,
+            zip_code: order.zip_code
+          }
+        }
+        render_response(200, 'address found', :ok, data)
+      else
+        render_response(200, 'no former order', :ok, { previous_order: false })
+      end
+    end
+
     # GET /orders/1
     def show
       unless current_user.admin || @order.user_id == current_user.id

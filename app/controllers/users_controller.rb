@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:profile]
   before_action :check_if_admin, only: %i[index]
 
   # GET /updates
@@ -20,6 +20,11 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
 
     render_response(200, 'user found', :ok, { first_name: @user.first_name, last_name: @user.last_name })
+  end
+
+  def profile
+    @user = current_user.as_json(except: [:jti])
+    render_response(200, 'user profile info', :ok, @user)
   end
 
   private

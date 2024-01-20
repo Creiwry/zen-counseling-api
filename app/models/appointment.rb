@@ -9,7 +9,7 @@ class Appointment < ApplicationRecord
 
   validates_datetime :datetime, on_or_after: -> { Date.current }
 
-  validates :link, presence: true
+  validates :link, presence: true, format: { with: %r{\Ahttps://zoom\.us/} }
   validates :status, presence: true, inclusion: %w[unpaid confirmed available past cancelled unconfirmed]
 
   def date
@@ -30,7 +30,7 @@ class Appointment < ApplicationRecord
   end
 
   def check_conditions
-    # raise 'cannot destroy appointment' unless status == 'past' || status == ''
+    raise 'cannot destroy appointment' unless status == 'past' || status == ''
   end
 
   def check_if_can_cancel

@@ -29,6 +29,7 @@ class User < ApplicationRecord
 
   validates :admin, inclusion: [true, false]
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :full_name, format: { with: /\A[a-zA-Z\s\-]+\z/, message: 'only allows letters, spaces, and hyphens' }
 
   validates_with Validators::PasswordRegexValidator
 

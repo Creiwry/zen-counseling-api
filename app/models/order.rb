@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_dependency 'validators/country_name_validator'
+
 class Order < ApplicationRecord
   before_save :update_item_stock
   belongs_to :user
@@ -10,8 +12,12 @@ class Order < ApplicationRecord
   validates :total, presence: true, numericality: {
     greater_than: 0
   }
-  validates :address, presence: true
   validates :status, presence: true, inclusion: %w[unpaid paid sent cancelled refunded delivered]
+
+  validates :zip_code, length: { maximum: 10 }
+  validates :city, format: { with: /\A[a-zA-Z\u0080-\u024F]+(?:[. \-]|[' ]|[a-zA-Z\u0080-\u024F])*\z/ }
+  validates :street_address, format: { with: /\A\s*\S.*\z/ }
+  validates_with Validators::CountryNameValidator
 
   def stripe_line_items
     line_items_stripe = []

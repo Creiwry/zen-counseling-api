@@ -23,7 +23,7 @@ class Invoice < ApplicationRecord
         invoice: self,
         admin:,
         client:,
-        link: 'this is the link',
+        link: 'https://zoom.us/mylink',
         datetime: DateTime.now + 1.year,
         status: 'unpaid'
       )
