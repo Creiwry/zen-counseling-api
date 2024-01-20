@@ -1,0 +1,15 @@
+version: 0.0
+os: linux
+files:
+- source: /
+destination: /var/www/my-app/
+permissions:
+- object: /var/www/my-app/
+pattern: “**”
+owner: ubuntu
+group: ubuntu
+mode: 775
+hooks:
+AfterInstall:
+- location: scripts/dependencies_install.sh
+runas: ubuntu
